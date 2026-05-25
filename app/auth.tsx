@@ -20,11 +20,41 @@ export default function AuthScreen() {
   const loginValid = validPhone && validPassword;
 
   const saveToken = (token: string) => {
-    localStorage.setItem("token", token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", token);
+    }
+  };
+
+  const handleAuth = async () => {
+    const url =
+      tab === "signup"
+        ? "https://youcashm-backend.onrender.com/auth/signup"
+        : "https://youcashm-backend.onrender.com/auth/login";
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, password }),
+      });
+
+      const data = await res.json();
+
+      if (data.token) {
+        saveToken(data.token);
+        router.push("/game");
+      } else {
+        alert(data.error || "Auth failed");
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Network error");
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white p-4">
+
       <div className="w-full max-w-md">
 
         {/* HEADER */}
@@ -80,7 +110,7 @@ export default function AuthScreen() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {/* CONFIRM (SIGNUP ONLY) */}
+          {/* CONFIRM PASSWORD (SIGNUP ONLY) */}
           {tab === "signup" && (
             <input
               className="w-full border p-3 rounded mb-3"
@@ -92,7 +122,7 @@ export default function AuthScreen() {
           )}
 
           {/* ERROR */}
-          {tab === "signup" && !passwordsMatch && confirmPassword && (
+          {tab === "signup" && confirmPassword && !passwordsMatch && (
             <p className="text-red-500 text-sm mb-2">
               Passwords do not match
             </p>
@@ -101,32 +131,8 @@ export default function AuthScreen() {
           {/* BUTTON */}
           <button
             disabled={tab === "signup" ? !signupValid : !loginValid}
+            onClick={handleAuth}
             className="w-full bg-green-500 text-white py-3 rounded-xl disabled:opacity-40"
-            onClick={async () => {
-              const url =
-                tab === "signup"
-                  ? "https://youcashm-backend.onrender.com/auth/signup"
-                  : "https://youcashm-backend.onrender.com/auth/login";
-
-              try {
-                const res = await fetch(url, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ phone, password }),
-                });
-
-                const data = await res.json();
-
-                if (data.token) {
-                  saveToken(data.token);
-                  router.push("/game");
-                } else {
-                  alert(data.error || "Auth failed");
-                }
-              } catch {
-                alert("Network error");
-              }
-            }}
           >
             {tab === "signup" ? "JOIN NOW" : "LOGIN"}
           </button>
@@ -134,6 +140,7 @@ export default function AuthScreen() {
           <p className="text-xs text-gray-500 text-center mt-4">
             Secure login powered by MTN Mobile Money
           </p>
+
         </div>
       </div>
     </div>
