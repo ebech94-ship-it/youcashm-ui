@@ -5,10 +5,10 @@ import React, { useEffect, useRef, useState } from "react";
 type Props = {
   history: number[];
   onlineUsers: number;
-  onOpenDeposit: () => void; // ✅ IMPORTANT FIX
+  openDeposit: () => void; // ✅ IMPORTANT FIX
 };
 
-export default function TopBar({ history, onlineUsers, onOpenDeposit }: Props) {
+export default function TopBar({ history, onlineUsers, openDeposit }: Props) {
   const [showBalance, setShowBalance] = useState(true);
   const [showHistory, setShowHistory] = useState(false);
   const fadeAnim = useRef(1);
@@ -76,7 +76,7 @@ export default function TopBar({ history, onlineUsers, onOpenDeposit }: Props) {
 
         {/* + DEPOSIT BUTTON (FIXED) */}
         <button
-          onClick={onOpenDeposit}   // ✅ THIS FIXES YOUR ISSUE
+          onClick={openDeposit}   // ✅ THIS FIXES YOUR ISSUE
           className="bg-green-400 text-black font-bold px-3 py-2 rounded-xl text-xl"
         >
           +
