@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import socket from "../services/socket";
+import { useAuth } from "@/context/AuthProvider";
 
 import TopBar from "../components/TopBar";
 import BettingPanel from "../components/BettingPanel";
@@ -29,6 +30,7 @@ export default function GameScreen() {
 
   const [onlineUsers, setOnlineUsers] = useState(0);
   const [playersBetting, setPlayersBetting] = useState(0);
+const { setShowDepositModal } = useAuth();
 
   const [autoTab, setAutoTab] = useState(false);
   const [autoBetEnabled, setAutoBetEnabled] = useState(false);
@@ -179,7 +181,11 @@ export default function GameScreen() {
 
   return (
     <div style={{ background: "#0b0b0f", minHeight: "100vh", padding: 20 }}>
-      <TopBar history={roundHistory} onlineUsers={onlineUsers} />
+ <TopBar
+  history={roundHistory}
+  onlineUsers={onlineUsers}
+  openDeposit={() => setShowDepositModal(true)}
+/>
 
       <div
         style={{
