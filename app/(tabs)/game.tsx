@@ -51,53 +51,55 @@ const { setShowDepositModal } = useAuth();
   const [renderTick, setRenderTick] = useState(0);
 
   /* ================= SOCKET ================= */
+useEffect(() => {
+  socket.removeAllListeners();
 
-  useEffect(() => {
-    socket.off();
+  socket.on("onlineUsers", (d: any) => setOnlineUsers(d.count || 0));
 
-    socket.on("onlineUsers", (d: any) => setOnlineUsers(d.count || 0));
-    socket.on("playersBetting", (d: any) =>
-      setPlayersBetting(d.count || 0)
-    );
+  socket.on("playersBetting", (d: any) =>
+    setPlayersBetting(d.count || 0)
+  );
 
-    socket.on("roundStart", (d: any) => {
-      setStatus("RUNNING");
-      setRoundId(d.roundId);
+  socket.on("roundStart", (d: any) => {
+    setStatus("RUNNING");
+    setRoundId(d.roundId);
 
-      isRunningRef.current = true;
-      displayedMultiplier.current = 1;
-      targetMultiplier.current = 1;
+    isRunningRef.current = true;
+    displayedMultiplier.current = 1;
+    targetMultiplier.current = 1;
 
-      setMultiplier(1);
-      cashoutLock.current = false;
-      trail.current = [];
-    });
+    setMultiplier(1);
+    cashoutLock.current = false;
+    trail.current = [];
+  });
 
-    socket.on("multiplier", (d: any) => {
-      targetMultiplier.current = d.multiplier;
-    });
+  socket.on("multiplier", (d: any) => {
+    targetMultiplier.current = d.multiplier;
+  });
 
-    socket.on("roundCrash", (d: any) => {
-      setStatus("CRASHED");
-      isRunningRef.current = false;
+  socket.on("roundCrash", (d: any) => {
+    setStatus("CRASHED");
+    isRunningRef.current = false;
 
-      const point = d.crashPoint || 1;
+    const point = d.crashPoint || 1;
 
-      setCrashPoint(point);
-      setMultiplier(point);
+    setCrashPoint(point);
+    setMultiplier(point);
 
-      setRoundHistory((p) => [point, ...p].slice(0, 20));
-    });
+    setRoundHistory((p) => [point, ...p].slice(0, 20));
+  });
 
-    socket.on("roundWaiting", (d: any) => {
-      setStatus("WAITING");
-      setIsBettingPhase(true);
-      setNextRoundCountdown(d.countdown || 5);
-      isRunningRef.current = false;
-    });
+  socket.on("roundWaiting", (d: any) => {
+    setStatus("WAITING");
+    setIsBettingPhase(true);
+    setNextRoundCountdown(d.countdown || 5);
+    isRunningRef.current = false;
+  });
 
-    return () => socket.off();
-  }, []);
+  return () => {
+    socket.removeAllListeners();
+  };
+}, []);
 
   /* ================= ANIMATION ================= */
 
