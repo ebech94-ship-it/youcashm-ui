@@ -1,24 +1,5 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
 import { AuthProvider } from "@/context/AuthProvider";
-import DepositModal from "@/components/DepositModal";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "youCashM",
-  description: "Crash Game Platform",
-};
 
 export default function RootLayout({
   children,
@@ -26,19 +7,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-
-        {/* 🔥 GLOBAL AUTH WRAPPER */}
+    <html lang="en">
+      <body>
         <AuthProvider>
           {children}
-            <DepositModal />
         </AuthProvider>
-
       </body>
     </html>
   );

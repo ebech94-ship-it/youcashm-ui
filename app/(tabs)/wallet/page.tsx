@@ -20,6 +20,8 @@ type VerifyDetails = {
   computedHash: string;
   originalHash: string;
 };
+const BASE_URL = "https://youcashm-backend.onrender.com";
+
 export default function WalletPage() {
   const { user, setShowDepositModal } = useAuth();
 
@@ -117,7 +119,7 @@ const handleWithdraw = async () => {
   }
 
   try {
-    const res = await fetch("/api/withdraw/create", {
+    const res = await fetch(`${BASE_URL}/api/withdraw/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -164,7 +166,7 @@ const handleVerifyRound = async () => {
       return;
     }
 
-    const res = await fetch("/api/verify-round", {
+    const res = await fetch(`${BASE_URL}/api/verify-round`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

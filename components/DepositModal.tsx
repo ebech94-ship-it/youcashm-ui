@@ -3,6 +3,7 @@
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
 
+const BASE_URL = "https://youcashm-backend.onrender.com";
 export default function DepositModal() {
   const {
     showDepositModal,
@@ -39,7 +40,7 @@ const handleDeposit = async () => {
   }
 
   try {
-    const res = await fetch("/api/deposit/create", {
+    const res = await fetch(`${BASE_URL}/api/deposit/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

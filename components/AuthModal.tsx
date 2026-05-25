@@ -29,10 +29,12 @@ const submitAuth = async () => {
     setLoading(true);
     setError("");
 
-    const endpoint =
-      mode === "login"
-        ? "http://localhost:5000/auth/login"
-        : "http://localhost:5000/auth/signup";
+   const BASE_URL = "https://youcashm-backend.onrender.com";
+
+const endpoint =
+  mode === "login"
+    ? `${BASE_URL}/auth/login`
+    : `${BASE_URL}/auth/signup`;
 
     const res = await fetch(endpoint, {
       method: "POST",
