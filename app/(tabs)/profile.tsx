@@ -1,251 +1,154 @@
-import { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  Switch,
-  ScrollView,
-} from "react-native";
+"use client";
 
-const avatars = [
-  "😎",
-  "🔥",
-  "🚀",
-  "🎮",
-  "🦅",
-  "💎",
-  "👑",
-  "⚡",
-];
+import { useState } from "react";
+
+const avatars = ["😎", "🔥", "🚀", "🎮", "🦅", "💎", "👑", "⚡"];
 
 export default function ProfileScreen() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [selectedAvatar, setSelectedAvatar] = useState("😎");
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+    <div style={styles.container}>
+      <div style={{ paddingBottom: 40 }}>
 
-        {/* ================= PROFILE HEADER ================= */}
+        {/* PROFILE HEADER */}
+        <div style={styles.profileCard}>
+          <div style={styles.avatarCircle}>
+            <span style={styles.avatarText}>{selectedAvatar}</span>
+          </div>
 
-        <View style={styles.profileCard}>
+          <h2 style={styles.username}>Player Profile</h2>
 
-          <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>
-              {selectedAvatar}
-            </Text>
-          </View>
-
-          <Text style={styles.username}>Player Profile</Text>
-
-          <Text style={styles.subText}>
+          <p style={styles.subText}>
             Customize your gaming experience
-          </Text>
+          </p>
 
-          {/* SHARE / INVITE */}
-          <Pressable style={styles.inviteButton}>
-            <Text style={styles.inviteText}>
-              👥 Invite / Share
-            </Text>
-          </Pressable>
+          <button style={styles.inviteButton}>
+            👥 Invite / Share
+          </button>
+        </div>
 
-        </View>
+        {/* AVATARS */}
+        <div style={styles.card}>
+          <h3 style={styles.sectionTitle}>Choose Avatar</h3>
 
-        {/* ================= AVATARS ================= */}
-
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>
-            Choose Avatar
-          </Text>
-
-          <View style={styles.avatarGrid}>
+          <div style={styles.avatarGrid}>
             {avatars.map((avatar) => (
-              <Pressable
+              <button
                 key={avatar}
-                style={[
-                  styles.avatarOption,
-                  selectedAvatar === avatar &&
-                    styles.avatarActive,
-                ]}
-                onPress={() => setSelectedAvatar(avatar)}
+                onClick={() => setSelectedAvatar(avatar)}
+                style={{
+                  ...styles.avatarOption,
+                  ...(selectedAvatar === avatar ? styles.avatarActive : {}),
+                }}
               >
-                <Text style={styles.avatarEmoji}>
-                  {avatar}
-                </Text>
-              </Pressable>
+                <span style={styles.avatarEmoji}>{avatar}</span>
+              </button>
             ))}
-          </View>
+          </div>
 
-          <Pressable style={styles.uploadButton}>
-            <Text style={styles.uploadText}>
-              📸 Upload From Device
-            </Text>
-          </Pressable>
-        </View>
+          <button style={styles.uploadButton}>
+            📸 Upload From Device
+          </button>
+        </div>
 
-        {/* ================= SOUND ================= */}
+        {/* SOUND */}
+        <div style={styles.card}>
+          <div style={styles.rowBetween}>
+            <div>
+              <h3 style={styles.sectionTitle}>Sound Effects</h3>
+              <p style={styles.info}>Enable game sounds & effects</p>
+            </div>
 
-        <View style={styles.card}>
-          <View style={styles.rowBetween}>
-            <View>
-              <Text style={styles.sectionTitle}>
-                Sound Effects
-              </Text>
-
-              <Text style={styles.info}>
-                Enable game sounds & effects
-              </Text>
-            </View>
-
-            <Switch
-              value={soundEnabled}
-              onValueChange={setSoundEnabled}
+            <input
+              type="checkbox"
+              checked={soundEnabled}
+              onChange={(e) => setSoundEnabled(e.target.checked)}
             />
-          </View>
-        </View>
+          </div>
+        </div>
 
-        {/* ================= BET HISTORY ================= */}
+        {/* BET HISTORY */}
+        <div style={styles.card}>
+          <h3 style={styles.sectionTitle}>My Bet History</h3>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>
-            My Bet History
-          </Text>
+          <div style={styles.historyItem}>
+            <div>
+              <p style={styles.betId}>Bet #A1024</p>
+              <p style={styles.betDate}>18 May 2026 • 20:35</p>
+            </div>
+            <p style={styles.winText}>+1,500 FCFA</p>
+          </div>
 
-          <View style={styles.historyItem}>
-            <View>
-              <Text style={styles.betId}>
-                Bet #A1024
-              </Text>
-              <Text style={styles.betDate}>
-                18 May 2026 • 20:35
-              </Text>
-            </View>
+          <div style={styles.historyItem}>
+            <div>
+              <p style={styles.betId}>Bet #A1025</p>
+              <p style={styles.betDate}>18 May 2026 • 20:41</p>
+            </div>
+            <p style={styles.lossText}>-500 FCFA</p>
+          </div>
+        </div>
 
-            <Text style={styles.winText}>
-              +1,500 FCFA
-            </Text>
-          </View>
+        {/* GAME LIMITS */}
+        <div style={styles.card}>
+          <h3 style={styles.sectionTitle}>Game Limits</h3>
 
-          <View style={styles.historyItem}>
-            <View>
-              <Text style={styles.betId}>
-                Bet #A1025
-              </Text>
-              <Text style={styles.betDate}>
-                18 May 2026 • 20:41
-              </Text>
-            </View>
+          <div style={styles.limitRow}>
+            <span>Minimum Bet</span>
+            <span>100 FCFA</span>
+          </div>
 
-            <Text style={styles.lossText}>
-              -500 FCFA
-            </Text>
-          </View>
-        </View>
+          <div style={styles.limitRow}>
+            <span>Maximum Bet</span>
+            <span>100,000 FCFA</span>
+          </div>
 
-        {/* ================= GAME LIMITS ================= */}
+          <div style={styles.limitRow}>
+            <span>Maximum Payout</span>
+            <span>5,000,000 FCFA</span>
+          </div>
+        </div>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>
-            Game Limits
-          </Text>
-
-          <View style={styles.limitRow}>
-            <Text style={styles.limitLabel}>
-              Minimum Bet
-            </Text>
-
-            <Text style={styles.limitValue}>
-              100 FCFA
-            </Text>
-          </View>
-
-          <View style={styles.limitRow}>
-            <Text style={styles.limitLabel}>
-              Maximum Bet
-            </Text>
-
-            <Text style={styles.limitValue}>
-              100,000 FCFA
-            </Text>
-          </View>
-
-          <View style={styles.limitRow}>
-            <Text style={styles.limitLabel}>
-              Maximum Payout
-            </Text>
-
-            <Text style={styles.limitValue}>
-              5,000,000 FCFA
-            </Text>
-          </View>
-        </View>
-
-        {/* ================= HOW TO PLAY ================= */}
-
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>
-            How To Play
-          </Text>
-
-          <Text style={styles.info}>
+        {/* HOW TO PLAY */}
+        <div style={styles.card}>
+          <h3 style={styles.sectionTitle}>How To Play</h3>
+          <p style={styles.info}>
             • Enter your bet amount{"\n"}
             • Press BET before round starts{"\n"}
             • Watch multiplier rise{"\n"}
-            • Cash out before crash{"\n"}
-            • Higher multiplier = bigger winnings
-          </Text>
-        </View>
+            • Cash out before crash
+          </p>
+        </div>
 
-        {/* ================= GAME RULES ================= */}
+        {/* FAIRNESS */}
+        <div style={styles.card}>
+          <h3 style={styles.sectionTitle}>Provably Fair</h3>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>
-            Game Rules
-          </Text>
+          <p style={styles.info}>
+            This game uses a provably fair system.
+          </p>
 
-          <Text style={styles.info}>
-            • Bets cannot be cancelled after round starts{"\n"}
-            • Crashes are random and provably fair{"\n"}
-            • Winnings depend on cashout multiplier{"\n"}
-            • Network interruptions may affect gameplay
-          </Text>
-        </View>
+          <button style={styles.fairButton}>
+            VERIFY FAIRNESS
+          </button>
+        </div>
 
-        {/* ================= PROVABLY FAIR ================= */}
-
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>
-            Provably Fair
-          </Text>
-
-          <Text style={styles.info}>
-            This game uses a provably fair algorithm
-            to ensure crash outcomes are random,
-            transparent, and verifiable by players.
-          </Text>
-
-          <Pressable style={styles.fairButton}>
-            <Text style={styles.fairButtonText}>
-              VERIFY FAIRNESS
-            </Text>
-          </Pressable>
-        </View>
-
-      </ScrollView>
-    </View>
+      </div>
+    </div>
   );
 }
 
-const styles = StyleSheet.create({
+const styles: any = {
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#fff",
     padding: 15,
+    fontFamily: "Arial",
   },
 
   profileCard: {
-    alignItems: "center",
+    textAlign: "center",
     marginBottom: 20,
   },
 
@@ -254,9 +157,10 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     backgroundColor: "#f3f4f6",
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    margin: "0 auto 10px",
   },
 
   avatarText: {
@@ -266,45 +170,37 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#111",
   },
 
   subText: {
     color: "#666",
-    marginTop: 5,
   },
 
   inviteButton: {
     marginTop: 15,
     backgroundColor: "#111",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-  },
-
-  inviteText: {
-    color: "white",
-    fontWeight: "bold",
+    color: "#fff",
+    padding: "10px 16px",
+    borderRadius: 10,
+    border: "none",
+    cursor: "pointer",
   },
 
   card: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#eee",
-    borderRadius: 14,
+    border: "1px solid #eee",
+    borderRadius: 12,
     padding: 15,
     marginBottom: 15,
   },
 
   sectionTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#111",
     marginBottom: 10,
   },
 
   avatarGrid: {
-    flexDirection: "row",
+    display: "flex",
     flexWrap: "wrap",
     gap: 10,
   },
@@ -312,102 +208,69 @@ const styles = StyleSheet.create({
   avatarOption: {
     width: 60,
     height: 60,
-    borderRadius: 14,
-    backgroundColor: "#f3f4f6",
-    justifyContent: "center",
-    alignItems: "center",
+    borderRadius: 12,
+    background: "#f3f4f6",
+    border: "none",
+    cursor: "pointer",
   },
 
   avatarActive: {
-    borderWidth: 2,
-    borderColor: "#3b82f6",
+    outline: "2px solid #3b82f6",
   },
 
   avatarEmoji: {
-    fontSize: 28,
+    fontSize: 24,
   },
 
   uploadButton: {
     marginTop: 15,
     backgroundColor: "#3b82f6",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-
-  uploadText: {
     color: "white",
-    fontWeight: "bold",
+    padding: 10,
+    borderRadius: 10,
+    border: "none",
+    cursor: "pointer",
   },
 
   rowBetween: {
-    flexDirection: "row",
+    display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
   },
 
   info: {
     color: "#555",
-    lineHeight: 22,
+    lineHeight: 1.5,
+    whiteSpace: "pre-line",
   },
 
   historyItem: {
-    flexDirection: "row",
+    display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderColor: "#eee",
+    borderBottom: "1px solid #eee",
+    padding: "10px 0",
   },
 
-  betId: {
-    fontWeight: "bold",
-    color: "#111",
-  },
+  betId: { fontWeight: "bold" },
+  betDate: { fontSize: 12, color: "#777" },
 
-  betDate: {
-    color: "#777",
-    fontSize: 12,
-    marginTop: 3,
-  },
-
-  winText: {
-    color: "#16a34a",
-    fontWeight: "bold",
-  },
-
-  lossText: {
-    color: "#dc2626",
-    fontWeight: "bold",
-  },
+  winText: { color: "green", fontWeight: "bold" },
+  lossText: { color: "red", fontWeight: "bold" },
 
   limitRow: {
-    flexDirection: "row",
+    display: "flex",
     justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: "#eee",
-  },
-
-  limitLabel: {
-    color: "#555",
-  },
-
-  limitValue: {
-    fontWeight: "bold",
-    color: "#111",
+    padding: "8px 0",
+    borderBottom: "1px solid #eee",
   },
 
   fairButton: {
     marginTop: 15,
     backgroundColor: "#111",
-    padding: 12,
+    color: "#fff",
+    padding: 10,
     borderRadius: 10,
-    alignItems: "center",
+    border: "none",
+    cursor: "pointer",
   },
-
-  fairButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-});
+};
