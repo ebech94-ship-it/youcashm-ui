@@ -14,30 +14,32 @@ export default function ProfilePage() {
   const [selectedAvatar, setSelectedAvatar] = useState("😎");
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-    }
+    localStorage.removeItem("token");
     router.push("/");
   };
 
   const handleShare = async () => {
     if (typeof window === "undefined") return;
 
+    const shareUrl = window.location.origin;
+
     const shareData = {
       title: "Join me on Crash Game 🚀",
       text: "Play crash games and win real rewards with me!",
-      url: window.location.origin,
+      url: shareUrl,
     };
 
     try {
       if (navigator?.share) {
         await navigator.share(shareData);
       } else if (navigator?.clipboard) {
-        await navigator.clipboard.writeText(shareData.url);
+        await navigator.clipboard.writeText(shareUrl);
         alert("Invite link copied!");
+      } else {
+        alert("Sharing not supported on this device.");
       }
     } catch (err) {
-      console.log(err);
+      console.log("Share error:", err);
     }
   };
 
@@ -48,14 +50,14 @@ export default function ProfilePage() {
     );
 
     const url = `https://wa.me/${phone}?text=${message}`;
-    window.open(url, "_blank");
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
     <div className="relative min-h-screen bg-white p-4 pb-24 overflow-y-auto">
 
       {/* BACKGROUND */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30" />
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-200 rounded-full blur-3xl opacity-30" />
       </div>
@@ -70,12 +72,12 @@ export default function ProfilePage() {
         <h1 className="text-2xl font-bold mt-4">Player Profile</h1>
 
         <p className="text-sm text-white/80 mt-1">
-          {user?.phone || "No Mobile Number"}
+          {user?.phone ?? "No Mobile Number"}
         </p>
 
         <button
           onClick={handleShare}
-          className="mt-4 bg-white text-black px-5 py-3 rounded-2xl font-bold shadow-md active:scale-95 transition-all"
+          className="mt-4 bg-white text-black px-5 py-3 rounded-2xl font-bold shadow-md active:scale-95 transition"
         >
           👥 Invite Friends
         </button>
@@ -90,36 +92,21 @@ export default function ProfilePage() {
 
           <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500 mb-1">Mobile Number</p>
-            <div className="flex items-center justify-between">
-              <p className="font-semibold text-gray-800">
-                {user?.phone || "Not Available"}
-              </p>
-              <button className="text-blue-500 font-semibold text-sm">
-                Edit
-              </button>
-            </div>
+            <p className="font-semibold text-gray-800">
+              {user?.phone ?? "Not Available"}
+            </p>
           </div>
 
           <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500 mb-1">Password</p>
-            <div className="flex items-center justify-between">
-              <p className="font-semibold text-gray-800">••••••••••</p>
-              <button className="text-blue-500 font-semibold text-sm">
-                Change
-              </button>
-            </div>
+            <p className="font-semibold text-gray-800">••••••••••</p>
           </div>
 
           <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500 mb-1">Player ID</p>
-            <div className="flex items-center justify-between">
-              <p className="font-semibold text-gray-800">
-                #{user?._id || "N/A"}
-              </p>
-              <button className="text-blue-500 font-semibold text-sm">
-                Copy
-              </button>
-            </div>
+            <p className="font-semibold text-gray-800">
+              #{user?._id ?? "N/A"}
+            </p>
           </div>
 
         </div>
@@ -135,7 +122,7 @@ export default function ProfilePage() {
             <button
               key={avatar}
               onClick={() => setSelectedAvatar(avatar)}
-              className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-gray-100 transition-all active:scale-95 ${
+              className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-gray-100 transition active:scale-95 ${
                 selectedAvatar === avatar
                   ? "border-2 border-blue-500 scale-110 shadow-md"
                   : ""
@@ -158,13 +145,13 @@ export default function ProfilePage() {
         </div>
 
         <button
-          onClick={() => setSoundEnabled(!soundEnabled)}
-          className={`w-14 h-8 rounded-full p-1 transition-all ${
+          onClick={() => setSoundEnabled((v) => !v)}
+          className={`w-14 h-8 rounded-full p-1 transition ${
             soundEnabled ? "bg-green-500" : "bg-gray-300"
           }`}
         >
           <div
-            className={`w-6 h-6 bg-white rounded-full transition-all ${
+            className={`w-6 h-6 bg-white rounded-full transition ${
               soundEnabled ? "translate-x-6" : ""
             }`}
           />

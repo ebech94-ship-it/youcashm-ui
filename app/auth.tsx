@@ -1,16 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { useRouter } from "next/navigation";
 
 export default function AuthScreen() {
   const [tab, setTab] = useState<"signup" | "login">("signup");
@@ -19,446 +10,132 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // ================= PHONE VALIDATION =================
-  const validPhone =
-    phone.startsWith("6") && phone.length === 9;
+  const router = useRouter();
 
-  // ================= PASSWORD VALIDATION =================
+  const validPhone = phone.startsWith("6") && phone.length === 9;
   const validPassword = password.length >= 4;
+  const passwordsMatch = password === confirmPassword;
 
-  const passwordsMatch =
-    password === confirmPassword;
+  const signupValid = validPhone && validPassword && passwordsMatch;
+  const loginValid = validPhone && validPassword;
 
-  const signupValid =
-    validPhone &&
-    validPassword &&
-    passwordsMatch;
-
-  const loginValid =
-    validPhone &&
-    validPassword;
+  const saveToken = (token: string) => {
+    localStorage.setItem("token", token);
+  };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={styles.container}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        keyboardShouldPersistTaps="handled"
-      >
+    <div className="min-h-screen flex items-center justify-center bg-white p-4">
+      <div className="w-full max-w-md">
 
-        {/* ================= LOGO / TITLE ================= */}
+        {/* HEADER */}
+        <div className="text-center mb-6">
+          <div className="w-20 h-20 mx-auto bg-black rounded-full flex items-center justify-center text-white text-3xl font-bold">
+            Y
+          </div>
 
-        <View style={styles.header}>
-          <View style={styles.logoCircle}>
-            <Text style={styles.logoText}>Y</Text>
-          </View>
-
-          <Text style={styles.title}>
-            youCashM
-          </Text>
-
-          <Text style={styles.subtitle}>
+          <h1 className="text-3xl font-bold mt-3">youCashM</h1>
+          <p className="text-gray-500 text-sm">
             Fast crash gaming with MTN MoMo
-          </Text>
-        </View>
+          </p>
+        </div>
 
-        {/* ================= TAB SWITCH ================= */}
-
-        <View style={styles.tabRow}>
-
-          <Pressable
-            style={[
-              styles.tabButton,
-              tab === "signup" && styles.activeTab,
-            ]}
-            onPress={() => setTab("signup")}
+        {/* TABS */}
+        <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+          <button
+            onClick={() => setTab("signup")}
+            className={`flex-1 py-3 rounded-lg font-semibold ${
+              tab === "signup" ? "bg-black text-white" : ""
+            }`}
           >
-            <Text
-              style={
-                tab === "signup"
-                  ? styles.activeTabText
-                  : styles.tabText
-              }
-            >
-              JOIN NOW
-            </Text>
-          </Pressable>
+            JOIN NOW
+          </button>
 
-          <Pressable
-            style={[
-              styles.tabButton,
-              tab === "login" && styles.activeTab,
-            ]}
-            onPress={() => setTab("login")}
+          <button
+            onClick={() => setTab("login")}
+            className={`flex-1 py-3 rounded-lg font-semibold ${
+              tab === "login" ? "bg-black text-white" : ""
+            }`}
           >
-            <Text
-              style={
-                tab === "login"
-                  ? styles.activeTabText
-                  : styles.tabText
-              }
-            >
-              LOGIN
-            </Text>
-          </Pressable>
+            LOGIN
+          </button>
+        </div>
 
-        </View>
+        {/* FORM */}
+        <div className="border rounded-xl p-4">
 
-        {/* ================= SIGNUP ================= */}
+          {/* PHONE */}
+          <input
+            className="w-full border p-3 rounded mb-3"
+            placeholder="MTN Number (6XXXXXXXX)"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
 
-        {tab === "signup" && (
-          <View style={styles.card}>
+          {/* PASSWORD */}
+          <input
+            className="w-full border p-3 rounded mb-3"
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-            <Text style={styles.sectionTitle}>
-              Create Account
-            </Text>
-
-            <Text style={styles.info}>
-              Enter your MTN Mobile Money number
-            </Text>
-
-            {/* PHONE */}
-            <TextInput
-              style={styles.input}
-              placeholder="MTN Number (6XXXXXXXX)"
-              keyboardType="number-pad"
-              maxLength={9}
-              value={phone}
-              onChangeText={setPhone}
-            />
-
-            {/* PASSWORD */}
-            <TextInput
-              style={styles.input}
-              placeholder="Create Password"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-
-            {/* CONFIRM PASSWORD */}
-            <TextInput
-              style={styles.input}
+          {/* CONFIRM (SIGNUP ONLY) */}
+          {tab === "signup" && (
+            <input
+              className="w-full border p-3 rounded mb-3"
               placeholder="Confirm Password"
-              secureTextEntry
+              type="password"
               value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
+          )}
 
-            {/* VALIDATION TEXTS */}
+          {/* ERROR */}
+          {tab === "signup" && !passwordsMatch && confirmPassword && (
+            <p className="text-red-500 text-sm mb-2">
+              Passwords do not match
+            </p>
+          )}
 
-            {!validPhone && phone.length > 0 && (
-              <Text style={styles.error}>
-                Enter valid MTN Cameroon number
-              </Text>
-            )}
+          {/* BUTTON */}
+          <button
+            disabled={tab === "signup" ? !signupValid : !loginValid}
+            className="w-full bg-green-500 text-white py-3 rounded-xl disabled:opacity-40"
+            onClick={async () => {
+              const url =
+                tab === "signup"
+                  ? "https://youcashm-backend.onrender.com/auth/signup"
+                  : "https://youcashm-backend.onrender.com/auth/login";
 
-            {!passwordsMatch &&
-              confirmPassword.length > 0 && (
-                <Text style={styles.error}>
-                  Passwords do not match
-                </Text>
-              )}
+              try {
+                const res = await fetch(url, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ phone, password }),
+                });
 
-            {/* JOIN BUTTON */}
-<Pressable
-  style={[
-    styles.mainButton,
-    !signupValid && styles.disabledButton,
-  ]}
-  disabled={!signupValid}
-  onPress={async () => {
-    try {
+                const data = await res.json();
 
-      const response = await fetch(
-  "https://youcashm-backend.onrender.com/auth/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            phone,
-            password,
-          }),
-        }
-      );
+                if (data.token) {
+                  saveToken(data.token);
+                  router.push("/game");
+                } else {
+                  alert(data.error || "Auth failed");
+                }
+              } catch {
+                alert("Network error");
+              }
+            }}
+          >
+            {tab === "signup" ? "JOIN NOW" : "LOGIN"}
+          </button>
 
-      const data = await response.json();
-
-      if (data.token) {
-
-        await AsyncStorage.setItem(
-          "token",
-          data.token
-        );
-
-        router.replace("/game");
-
-      } else {
-        alert(data.error || "Signup failed");
-      }
-
-    } catch {
-      alert("Network error");
-    }
-  }}
->
-  <Text style={styles.mainButtonText}>
-    JOIN NOW
-  </Text>
-</Pressable>
-
-            <Text style={styles.footerText}>
-              By joining, you agree to our
-              Terms & Fair Play Policy
-            </Text>
-
-          </View>
-        )}
-
-        {/* ================= LOGIN ================= */}
-
-        {tab === "login" && (
-          <View style={styles.card}>
-
-            <Text style={styles.sectionTitle}>
-              Welcome Back
-            </Text>
-
-            {/* PHONE */}
-            <TextInput
-              style={styles.input}
-              placeholder="MTN Number"
-              keyboardType="number-pad"
-              maxLength={9}
-              value={phone}
-              onChangeText={setPhone}
-            />
-
-            {/* PASSWORD */}
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-
-            {/* LOGIN BUTTON */}
-
-            <Pressable
-  style={[
-    styles.mainButton,
-    !loginValid && styles.disabledButton,
-  ]}
-  disabled={!loginValid}
-  onPress={async () => {
-    try {
-
-      const response = await fetch(
-  "https://youcashm-backend.onrender.com/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            phone,
-            password,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.token) {
-
-        await AsyncStorage.setItem(
-          "token",
-          data.token
-        );
-
-        router.replace("/game");
-
-      } else {
-        alert(data.error || "Login failed");
-      }
-
-    } catch {
-      alert("Network error");
-    }
-  }}
->
-  <Text style={styles.mainButtonText}>
-    LOGIN
-  </Text>
-</Pressable>
-
-            {/* FORGOT PASSWORD */}
-
-            <Pressable style={styles.linkButton}>
-              <Text style={styles.linkText}>
-                Forgot Password?
-              </Text>
-            </Pressable>
-
-            {/* EXTRA */}
-
-            <Text style={styles.footerText}>
-              Secure login powered by MTN Mobile Money
-            </Text>
-
-          </View>
-        )}
-
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <p className="text-xs text-gray-500 text-center mt-4">
+            Secure login powered by MTN Mobile Money
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-
-  scroll: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-
-  header: {
-    alignItems: "center",
-    marginBottom: 35,
-  },
-
-  logoCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: "#111",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-
-  logoText: {
-    color: "white",
-    fontSize: 42,
-    fontWeight: "bold",
-  },
-
-  title: {
-    fontSize: 34,
-    fontWeight: "bold",
-    color: "#111",
-  },
-
-  subtitle: {
-    color: "#666",
-    marginTop: 6,
-  },
-
-  tabRow: {
-    flexDirection: "row",
-    backgroundColor: "#f3f4f6",
-    borderRadius: 14,
-    padding: 5,
-    marginBottom: 25,
-  },
-
-  tabButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-
-  activeTab: {
-    backgroundColor: "#111",
-  },
-
-  tabText: {
-    color: "#555",
-    fontWeight: "600",
-  },
-
-  activeTabText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-
-  card: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#eee",
-    borderRadius: 18,
-    padding: 20,
-  },
-
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#111",
-    marginBottom: 8,
-  },
-
-  info: {
-    color: "#666",
-    marginBottom: 20,
-  },
-
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
-  },
-
-  mainButton: {
-    backgroundColor: "#22c55e",
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: "center",
-    marginTop: 10,
-  },
-
-  disabledButton: {
-    opacity: 0.4,
-  },
-
-  mainButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-
-  error: {
-    color: "#dc2626",
-    marginBottom: 10,
-  },
-
-  linkButton: {
-    marginTop: 18,
-    alignItems: "center",
-  },
-
-  linkText: {
-    color: "#3b82f6",
-    fontWeight: "600",
-  },
-
-  footerText: {
-    marginTop: 20,
-    color: "#777",
-    textAlign: "center",
-    lineHeight: 20,
-    fontSize: 12,
-  },
-});
