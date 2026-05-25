@@ -1,12 +1,6 @@
+"use client";
+
 import { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  TextInput,
-  ScrollView,
-} from "react-native";
 
 export default function WalletScreen() {
   const [tab, setTab] = useState<
@@ -14,8 +8,8 @@ export default function WalletScreen() {
   >("main");
 
   const [amount, setAmount] = useState("");
-  const balance = 12500;
 
+  const balance = 12500;
   const min = 500;
   const max = 200000;
 
@@ -23,201 +17,209 @@ export default function WalletScreen() {
   const validAmount = !isNaN(num) && num >= min && num <= max;
 
   return (
-    <View style={styles.container}>
+    <div style={styles.container}>
+      <div style={styles.layout}>
 
-      <View style={styles.layout}>
+        {/* SIDEBAR */}
+        <div style={styles.sidebar}>
+          {["main", "deposit", "withdraw", "statement", "help", "logout"].map(
+            (t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t as any)}
+                style={{
+                  ...styles.sideTab,
+                  ...(tab === t ? styles.sideTabActive : {}),
+                }}
+              >
+                <span style={tab === t ? styles.sideTextActive : styles.sideText}>
+                  {t.toUpperCase()}
+                </span>
+              </button>
+            )
+          )}
+        </div>
 
-        {/* ================= LEFT TAB MENU ================= */}
-        <View style={styles.sidebar}>
-          {["main", "deposit", "withdraw", "statement", "help", "logout"].map((t) => (
-            <Pressable
-              key={t}
-              onPress={() => setTab(t as any)}
-              style={[styles.sideTab, tab === t && styles.sideTabActive]}
-            >
-              <Text style={tab === t ? styles.sideTextActive : styles.sideText}>
-                {t.toUpperCase()}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
+        {/* CONTENT */}
+        <div style={styles.content}>
 
-        {/* ================= MAIN CONTENT ================= */}
-        <ScrollView contentContainerStyle={styles.content}>
-
-          {/* ================= BALANCE HEADER ================= */}
-          <View style={styles.header}>
-            <Text style={styles.balanceLabel}>Wallet Balance</Text>
-            <Text style={styles.balance}>
+          {/* HEADER */}
+          <div style={styles.header}>
+            <p style={styles.balanceLabel}>Wallet Balance</p>
+            <h1 style={styles.balance}>
               {balance.toLocaleString()} FCFA
-            </Text>
-            <Text style={styles.phone}>
+            </h1>
+            <p style={styles.phone}>
               📱 MTN / Orange: +237 6XX XXX XXX
-            </Text>
-          </View>
+            </p>
+          </div>
 
-          {/* ================= MAIN ================= */}
+          {/* MAIN */}
           {tab === "main" && (
-            <View style={styles.card}>
-              <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <div style={styles.card}>
+              <h3>Quick Actions</h3>
 
-              <View style={styles.row}>
-                <Pressable
+              <div style={styles.row}>
+                <button
                   style={styles.depositBtn}
-                  onPress={() => setTab("deposit")}
+                  onClick={() => setTab("deposit")}
                 >
-                  <Text style={styles.btnText}>DEPOSIT</Text>
-                </Pressable>
+                  DEPOSIT
+                </button>
 
-                <Pressable
+                <button
                   style={styles.withdrawBtn}
-                  onPress={() => setTab("withdraw")}
+                  onClick={() => setTab("withdraw")}
                 >
-                  <Text style={styles.btnText}>WITHDRAW</Text>
-                </Pressable>
-              </View>
-            </View>
+                  WITHDRAW
+                </button>
+              </div>
+            </div>
           )}
 
-          {/* ================= DEPOSIT ================= */}
+          {/* DEPOSIT */}
           {tab === "deposit" && (
-            <View style={styles.card}>
-              <Text style={styles.sectionTitle}>Deposit</Text>
+            <div style={styles.card}>
+              <h3>Deposit</h3>
 
-              <TextInput
+              <input
                 style={styles.input}
                 placeholder="Enter amount"
-                keyboardType="numeric"
                 value={amount}
-                onChangeText={setAmount}
+                onChange={(e) => setAmount(e.target.value)}
               />
 
-              <Text style={styles.hint}>
+              <p style={styles.hint}>
                 Min {min} FCFA | Max {max.toLocaleString()} FCFA
-              </Text>
+              </p>
 
-              <Pressable
-                style={[styles.actionBtn, !validAmount && { opacity: 0.4 }]}
+              <button
                 disabled={!validAmount}
+                style={{
+                  ...styles.actionBtn,
+                  opacity: !validAmount ? 0.4 : 1,
+                }}
               >
-                <Text style={styles.actionText}>CONFIRM DEPOSIT</Text>
-              </Pressable>
-            </View>
+                CONFIRM DEPOSIT
+              </button>
+            </div>
           )}
 
-          {/* ================= WITHDRAW ================= */}
+          {/* WITHDRAW */}
           {tab === "withdraw" && (
-            <View style={styles.card}>
-              <Text style={styles.sectionTitle}>Withdraw</Text>
+            <div style={styles.card}>
+              <h3>Withdraw</h3>
 
-              <TextInput
+              <input
                 style={styles.input}
                 placeholder="Enter amount"
-                keyboardType="numeric"
                 value={amount}
-                onChangeText={setAmount}
+                onChange={(e) => setAmount(e.target.value)}
               />
 
-              <Text style={styles.hint}>
+              <p style={styles.hint}>
                 Available: {balance.toLocaleString()} FCFA
-              </Text>
+              </p>
 
-              <Pressable
-                style={[
-                  styles.actionBtn,
-                  (!validAmount || num > balance) && { opacity: 0.4 },
-                ]}
+              <button
                 disabled={!validAmount || num > balance}
+                style={{
+                  ...styles.actionBtn,
+                  opacity: !validAmount || num > balance ? 0.4 : 1,
+                }}
               >
-                <Text style={styles.actionText}>WITHDRAW NOW</Text>
-              </Pressable>
-            </View>
+                WITHDRAW NOW
+              </button>
+            </div>
           )}
 
-          {/* ================= STATEMENT ================= */}
+          {/* STATEMENT */}
           {tab === "statement" && (
-            <View style={styles.card}>
-              <Text style={styles.sectionTitle}>Statements</Text>
+            <div style={styles.card}>
+              <h3>Statements</h3>
 
-              <View style={styles.statement}>
-                <Text>Bet #12345</Text>
-                <Text style={{ color: "green" }}>+1200 FCFA</Text>
-              </View>
+              <div style={styles.statement}>
+                <span>Bet #12345</span>
+                <span style={{ color: "green" }}>+1200 FCFA</span>
+              </div>
 
-              <View style={styles.statement}>
-                <Text>Bet #12346</Text>
-                <Text style={{ color: "red" }}>-500 FCFA</Text>
-              </View>
-            </View>
+              <div style={styles.statement}>
+                <span>Bet #12346</span>
+                <span style={{ color: "red" }}>-500 FCFA</span>
+              </div>
+            </div>
           )}
 
-          {/* ================= HELP ================= */}
+          {/* HELP */}
           {tab === "help" && (
-            <View style={styles.card}>
-              <Text style={styles.sectionTitle}>Help Center</Text>
-              <Text style={styles.info}>
+            <div style={styles.card}>
+              <h3>Help Center</h3>
+              <p style={styles.info}>
                 • Deposits instant via MTN/Orange{"\n"}
                 • Withdrawals 1–5 minutes{"\n"}
                 • Min withdrawal 1000 FCFA
-              </Text>
-            </View>
+              </p>
+            </div>
           )}
 
-          {/* ================= LOGOUT ================= */}
+          {/* LOGOUT */}
           {tab === "logout" && (
-            <View style={styles.card}>
-              <Text style={styles.sectionTitle}>Logout</Text>
+            <div style={styles.card}>
+              <h3>Logout</h3>
 
-              <Pressable style={styles.logoutBtn}>
-                <Text style={styles.logoutText}>LOG OUT</Text>
-              </Pressable>
-            </View>
+              <button style={styles.logoutBtn}>
+                LOG OUT
+              </button>
+            </div>
           )}
 
-        </ScrollView>
-      </View>
-    </View>
+        </div>
+      </div>
+    </div>
   );
 }
-const styles = StyleSheet.create({
+
+/* ================= STYLES ================= */
+const styles: any = {
   container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
+    display: "flex",
+    minHeight: "100vh",
+    background: "#fff",
+    fontFamily: "Arial",
   },
 
   layout: {
-    flex: 1,
-    flexDirection: "row",
+    display: "flex",
+    width: "100%",
   },
 
   sidebar: {
-    width: 110,
-    backgroundColor: "#f4f6f8",
-    paddingVertical: 20,
-    borderRightWidth: 1,
-    borderRightColor: "#e5e5e5",
+    width: 120,
+    background: "#f4f6f8",
+    padding: 10,
+    borderRight: "1px solid #ddd",
   },
 
   sideTab: {
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    marginVertical: 5,
-    borderWidth: 1,
-    borderColor: "#ddd",
+    width: "100%",
+    padding: 10,
+    marginBottom: 8,
+    border: "1px solid #ddd",
     borderRadius: 8,
-    alignItems: "center",
-    marginHorizontal: 6,
+    background: "white",
+    cursor: "pointer",
   },
 
   sideTabActive: {
-    backgroundColor: "#3b82f6",
+    background: "#3b82f6",
     borderColor: "#3b82f6",
+    color: "white",
   },
 
   sideText: {
     fontSize: 10,
     color: "#555",
-    fontWeight: "600",
+    fontWeight: 600,
   },
 
   sideTextActive: {
@@ -227,12 +229,12 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    flexGrow: 1,
+    flex: 1,
     padding: 15,
   },
 
   header: {
-    alignItems: "center",
+    textAlign: "center",
     marginBottom: 20,
   },
 
@@ -243,104 +245,88 @@ const styles = StyleSheet.create({
   balance: {
     fontSize: 36,
     fontWeight: "bold",
-    color: "#111",
   },
 
   phone: {
     color: "#666",
-    marginTop: 5,
   },
 
   card: {
-    backgroundColor: "#ffffff",
-    borderWidth: 1,
-    borderColor: "#eee",
-    padding: 15,
+    border: "1px solid #eee",
     borderRadius: 12,
+    padding: 15,
     marginBottom: 15,
   },
 
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-
   row: {
-    flexDirection: "row",
+    display: "flex",
     gap: 10,
   },
 
   depositBtn: {
     flex: 1,
-    backgroundColor: "#22c55e",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
+    background: "#22c55e",
+    color: "white",
+    padding: 10,
+    border: "none",
+    borderRadius: 8,
+    cursor: "pointer",
   },
 
   withdrawBtn: {
     flex: 1,
-    backgroundColor: "#ef4444",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-
-  btnText: {
+    background: "#ef4444",
     color: "white",
-    fontWeight: "bold",
+    padding: 10,
+    border: "none",
+    borderRadius: 8,
+    cursor: "pointer",
   },
 
   input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
+    width: "100%",
     padding: 10,
     borderRadius: 8,
+    border: "1px solid #ddd",
     marginTop: 10,
   },
 
   hint: {
-    color: "#777",
     fontSize: 12,
+    color: "#777",
     marginTop: 5,
   },
 
   actionBtn: {
-    backgroundColor: "#3b82f6",
-    padding: 12,
+    width: "100%",
     marginTop: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-
-  actionText: {
+    background: "#3b82f6",
     color: "white",
-    fontWeight: "bold",
+    padding: 12,
+    border: "none",
+    borderRadius: 10,
+    cursor: "pointer",
   },
 
   statement: {
-    flexDirection: "row",
+    display: "flex",
     justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderColor: "#eee",
+    padding: "10px 0",
+    borderBottom: "1px solid #eee",
   },
 
   info: {
+    whiteSpace: "pre-line",
     color: "#555",
-    lineHeight: 20,
   },
 
   logoutBtn: {
-    backgroundColor: "#111",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-
-  logoutText: {
+    width: "100%",
+    background: "#111",
     color: "white",
-    fontWeight: "bold",
+    padding: 12,
+    border: "none",
+    borderRadius: 10,
+    cursor: "pointer",
   },
-});
+};
