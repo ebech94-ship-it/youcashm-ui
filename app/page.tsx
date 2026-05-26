@@ -33,7 +33,7 @@ export default function LandingPage() {
       <div style={styles.bgGlow2}></div>
 
       {/* MAIN HERO */}
-      <div style={styles.hero}>
+      <div style={{ ...styles.hero, position: "relative" }}>
 
         <Image
           src="/LogoGs.png"
@@ -42,6 +42,16 @@ export default function LandingPage() {
           height={120}
           style={styles.logo}
         />
+        <div style={styles.plane}>✈️</div>
+        {/* RIGHT LOGO */}
+  <Image
+    src="/youcashlogo.png"
+    alt="youCash logo"
+    width={320}
+    height={320}
+    style={styles.sideLogo}
+  />
+
 
         <h1 style={styles.title}>youCashM ✈️</h1>
 
@@ -117,7 +127,28 @@ export default function LandingPage() {
             <h2 style={styles.statNumber}>Fast</h2>
             <p style={styles.statText}>Cashouts</p>
           </div>
-        </div>
+                </div>
+                {/* TRUST SECTION */}
+<div style={styles.trustSection}>
+  <h2 style={styles.sectionTitle}>Why Players Trust youCashM</h2>
+
+  <div style={styles.cardsRow}>
+    <div style={styles.infoCard}>
+      <h3>🔒 Fair Gameplay</h3>
+      <p>Every round uses provably random crash results.</p>
+    </div>
+
+    <div style={styles.infoCard}>
+      <h3>⚡ Instant Processing</h3>
+      <p>Deposits and withdrawals are processed automatically.</p>
+    </div>
+
+    <div style={styles.infoCard}>
+      <h3>🌍 Live System</h3>
+      <p>All players participate in the same real-time rounds.</p>
+    </div>
+  </div>
+</div>
 
         {/* HOW IT WORKS */}
         <div style={styles.howSection}>
@@ -204,7 +235,7 @@ const styles: { [key: string]: CSSProperties } = {
     minHeight: "100vh",
     background: "linear-gradient(to bottom, #05060a, #0d111c, #05060a)",
     overflowX: "hidden",
-     overflowY: "hidden",
+     overflowY: "auto",
      scrollbarWidth: "none",
 msOverflowStyle: "none",
     width: "100%",
@@ -212,6 +243,30 @@ msOverflowStyle: "none",
     padding: "40px 20px",
     fontFamily: "Arial",
   },
+  plane: {
+  position: "absolute",
+  top: 10,
+  left: 160,
+  fontSize: 70,
+  animation: "flyAcross 7s linear infinite",
+  transform: "rotate(40deg)",  
+},
+sideLogo: {
+  position: "absolute",
+  top: 0,
+  right: 0,
+
+  width: 320,
+  height: 420,
+  objectFit: "contain",
+
+  borderRadius: 20,
+  border: "3px solid #22c55e",
+  background: "#0b0f19",
+  boxShadow: "0 0 25px #22c55e66",
+  padding: 2,
+  zIndex: 5,
+},
 
   bgGlow1: {
     position: "absolute",
@@ -253,7 +308,8 @@ msOverflowStyle: "none",
     padding: 6,
     background: "#0b0f19",
     boxShadow: "0 0 35px #22c55e88",
-    marginTop: 100,
+   marginTop: 100,
+animation: "float 3s ease-in-out infinite",
     marginLeft: 25,
   },
 
@@ -272,6 +328,9 @@ msOverflowStyle: "none",
     fontSize: 20,
     lineHeight: 1.7,
   },
+  trustSection: {
+  marginTop: 80,
+},
 
   buttonRow: {
     marginTop: 40,
