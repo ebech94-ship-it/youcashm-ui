@@ -8,6 +8,7 @@ import {
 } from "react";
 
 import { saveAuth, clearAuth } from "@/lib/auth";
+import DepositModal from "@/components/DepositModal";
 
 
 export type BetHistoryItem = {
@@ -157,9 +158,13 @@ showDepositModal,
 setShowDepositModal,
       }}
     >
-      {children}
-    </AuthContext.Provider>
-  );
+       {children}
+
+    {/* ✅ THIS IS THE EXACT PLACE */}
+   {showDepositModal && <DepositModal />}
+
+  </AuthContext.Provider>
+);
 }
 
 export function useAuth() {

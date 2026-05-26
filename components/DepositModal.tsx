@@ -5,12 +5,10 @@ import { useState } from "react";
 
 const BASE_URL = "https://youcashm-backend.onrender.com";
 export default function DepositModal() {
-  const {
-    showDepositModal,
-    setShowDepositModal,
-    user,
+  const { showDepositModal, setShowDepositModal, user,
   } = useAuth();
   const [depositAmount, setDepositAmount] = useState("");
+const [loading, setLoading] = useState(false);
 
 const MIN_AMOUNT = 500;
 const MAX_AMOUNT = 500000;
@@ -21,6 +19,10 @@ const isValidCMPhone = (phone: string) => {
 };
 
 const handleDeposit = async () => {
+  if (loading) return;
+
+  setLoading(true);
+
   const amountNum = Number(depositAmount);
   const phone = user?.phone || "";
 
@@ -59,11 +61,14 @@ const handleDeposit = async () => {
 
       setShowDepositModal(false);
       setDepositAmount("");
+      setLoading(false);
     } else {
+    setLoading(false);
       alert(data?.message || "Failed to create payment link");
     }
   } catch (err) {
     console.log(err);
+    setLoading(false);
     alert("Deposit failed");
   }
 };
@@ -129,10 +134,16 @@ const handleDeposit = async () => {
 
              <button
   onClick={handleDeposit}
-  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all"
+  disabled={loading}
+  className={`w-full py-4 rounded-2xl font-bold shadow-lg transition-all ${
+    loading
+      ? "bg-gray-400 text-white cursor-not-allowed"
+      : "bg-gradient-to-r from-green-500 to-emerald-500 text-white active:scale-95"
+  }`}
 >
-  Continue Deposit
+  {loading ? "Processing..." : "Continue Deposit"}
 </button>
+
 <p className="text-xs text-amber-500 text-center leading-5">
   ⚠️ Mobile Money operator charges may apply depending on MTN or Orange policies.
 </p>
