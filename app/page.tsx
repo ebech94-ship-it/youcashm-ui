@@ -256,8 +256,8 @@ sideLogo: {
   top: 0,
   right: 0,
 
-  width: 320,
-  height: 420,
+  width: 220,
+  height: 220,
   objectFit: "contain",
 
   borderRadius: 20,
