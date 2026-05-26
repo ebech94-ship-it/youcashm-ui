@@ -103,9 +103,9 @@ export default function ProfilePage() {
           </div>
 
           <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-            <p className="text-xs text-gray-500 mb-1">Player ID</p>
-            <p className="font-semibold text-gray-800">
-              #{user?._id ?? "N/A"}
+            <p className="text-xs text-gray-500 mb-1"> USER ID</p>
+           <p className="font-semibold text-gray-800">
+            {user?.publicId ?? "N/A"}
             </p>
           </div>
 

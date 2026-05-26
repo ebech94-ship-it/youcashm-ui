@@ -41,6 +41,7 @@ type User = {
   betHistory: BetHistoryItem[];
 
   transactions: TransactionItem[];
+   publicId?: string;
 };
 
 type AuthContextType = {

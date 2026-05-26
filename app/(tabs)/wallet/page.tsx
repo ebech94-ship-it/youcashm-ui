@@ -191,7 +191,7 @@ setVerifyResult(data.valid);
 };
   return (
     <div className="relative min-h-screen bg-white p-4 pb-28 overflow-y-auto">
-
+<h1 style={{ color: "red" }}>REAL WALLET PAGE</h1>
       {/* ================= BACKGROUND DECOR ================= */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
 
@@ -239,9 +239,9 @@ setVerifyResult(data.valid);
               Account
             </p>
 
-            <p className="font-semibold mt-1">
-              {user?.phone || "No Number"}
-            </p>
+            <p className="text-xs text-white/70 mt-1">
+  Player ID: {user?.publicId || "N/A"}
+</p>
           </div>
 
           <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20">
