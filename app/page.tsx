@@ -47,7 +47,7 @@ export default function LandingPage() {
   <Image
     src="/youcashlogo.png"
     alt="youCash logo"
-    width={320}
+    width={720}
     height={320}
     style={styles.sideLogo}
   />
@@ -252,20 +252,20 @@ msOverflowStyle: "none",
   transform: "rotate(40deg)",  
 },
 sideLogo: {
-  position: "absolute",
-  top: 0,
-  right: 0,
+  width: "clamp(120px, 35vw, 220px)",
+  height: "auto",
 
-  width: 220,
-  height: 220,
   objectFit: "contain",
 
   borderRadius: 20,
   border: "3px solid #22c55e",
   background: "#0b0f19",
   boxShadow: "0 0 25px #22c55e66",
+
   padding: 2,
-  zIndex: 5,
+
+  display: "block",
+  margin: "0 auto 25px auto",
 },
 
   bgGlow1: {
