@@ -291,24 +291,31 @@ const handleVerifyRound = async () => {
       <div className="grid grid-cols-2 gap-4 mb-6">
 
         {/* DEPOSIT */}
-        <button
-          onClick={() => setShowDepositModal(true)}
-          className="bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-[28px] p-5 shadow-lg active:scale-95 transition-all text-left"
-        >
+<button
+  onClick={() => setShowDepositModal(true)}
+  className="relative overflow-hidden bg-yellow-400 text-black border-2 border-black rounded-[28px] p-5 shadow-md active:scale-95 transition-all text-left"
+>
 
-          <div className="text-3xl mb-3">
-            ⬇️
-          </div>
+  {/* subtle glow */}
+  <div className="absolute -top-10 -right-10 w-28 h-28 bg-black/10 rounded-full blur-2xl"></div>
 
-          <h2 className="font-bold text-lg">
-            Deposit
-          </h2>
+  <div className="relative z-10">
 
-          <p className="text-sm text-white/80 mt-1">
-            Fast Mobile Money Topup
-          </p>
+    <div className="text-3xl mb-3">
+      ⬇️
+    </div>
 
-        </button>
+    <h2 className="font-extrabold text-xl tracking-wide">
+      Deposit
+    </h2>
+
+    <p className="text-sm font-semibold text-black/80 mt-1">
+      Fast Mobile Money Topup
+    </p>
+
+  </div>
+
+</button>
 
         {/* WITHDRAW */}
         <button
