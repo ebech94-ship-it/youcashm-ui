@@ -224,9 +224,9 @@ const handleVerifyRound = async () => {
     </span>
   </div>
 
-  <h1 className="text-4xl font-black bg-gradient-to-r from-yellow-200 via-yellow-400 to-amber-500 bg-clip-text text-transparent tracking-wide drop-shadow-[0_0_20px_rgba(255,215,0,0.25)]">
-    WALLET
-  </h1>
+  <h1 className="text-5xl font-extrabold text-[#0b1f3a] tracking-[3px] uppercase drop-shadow-sm">
+  WALLET
+</h1>
 
   <p className="text-gray-700 mt-3 text-sm tracking-wide font-semibold" >
     Manage deposits, withdrawals & transactions
@@ -234,42 +234,58 @@ const handleVerifyRound = async () => {
 
 </div>
 
-      {/* ================= BALANCE CARD ================= */}
-      <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-[32px] p-6 text-white shadow-xl mb-5">
+    {/* ================= BALANCE CARD ================= */}
+<div className="relative overflow-hidden rounded-[32px] p-6 mb-5 bg-gradient-to-br from-[#071226] via-[#0b1f3a] to-[#102b52] border-2 border-yellow-500 shadow-[0_0_35px_rgba(15,23,42,0.45)]">
 
-        <p className="text-sm text-white/80">
-          Available Balance
+  {/* GOLD GLOW */}
+  <div className="absolute -top-16 -right-16 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl"></div>
+
+  <div className="relative z-10">
+
+    {/* TITLE */}
+    <p className="text-sm font-semibold tracking-wide text-yellow-200">
+      Available Balance
+    </p>
+
+    {/* BALANCE */}
+    <h2 className="text-4xl font-extrabold mt-3 text-yellow-300 drop-shadow-[0_0_10px_rgba(250,204,21,0.35)] break-words">
+      {formattedBalance} FCFA
+    </h2>
+
+    {/* BOTTOM SECTION */}
+    <div className="flex items-center justify-between mt-6 gap-3">
+
+      {/* ACCOUNT */}
+      <div>
+
+        <p className="text-xs uppercase tracking-wider text-blue-200 font-semibold">
+          Account
         </p>
 
-        <h2 className="text-4xl font-bold mt-2">
-          {formattedBalance} FCFA
-        </h2>
-
-        <div className="flex items-center justify-between mt-6">
-
-          <div>
-            <p className="text-xs text-white/70">
-              Account
-            </p>
-
-            <p className="text-xs text-white/70 mt-1">
-  Player ID: {user?.publicId || "N/A"}
-</p>
-          </div>
-
-          <div className="bg-white/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/20">
-            <p className="text-xs text-white/80">
-              Status
-            </p>
-
-            <p className="font-bold">
-              Active
-            </p>
-          </div>
-
-        </div>
+        <p className="text-sm text-white font-bold mt-1 break-all">
+          Player ID: {user?.publicId || "N/A"}
+        </p>
 
       </div>
+
+      {/* STATUS */}
+      <div className="bg-yellow-400/15 px-4 py-3 rounded-2xl border border-yellow-400/30 shadow-inner">
+
+        <p className="text-xs uppercase tracking-wide text-yellow-200 font-semibold">
+          Status
+        </p>
+
+        <p className="font-extrabold text-yellow-300 mt-1">
+          Active
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
       {/* ================= ACTION BUTTONS ================= */}
       <div className="grid grid-cols-2 gap-4 mb-6">
