@@ -204,7 +204,7 @@ const handleVerifyRound = async () => {
 };
   return (
     <div className="relative min-h-screen bg-white p-4 pb-28 overflow-y-auto">
-<h1 style={{ color: "red" }}>REAL WALLET PAGE</h1>
+<h1 style={{ color: "BLUE" }}>YouCashM</h1>
       {/* ================= BACKGROUND DECOR ================= */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
 
@@ -228,7 +228,7 @@ const handleVerifyRound = async () => {
     WALLET
   </h1>
 
-  <p className="text-amber-700 mt-3 text-sm tracking-wide font-semibold" >
+  <p className="text-gray-700 mt-3 text-sm tracking-wide font-semibold" >
     Manage deposits, withdrawals & transactions
   </p>
 
@@ -319,8 +319,8 @@ const handleVerifyRound = async () => {
       {/* ================= LIVE STATS ================= */}
       <div className="grid grid-cols-2 gap-3 mb-6">
 
-        <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] p-4 shadow-sm">
-          <p className="text-sm text-gray-500">
+        <div className="bg-white border border-gray-200 rounded-[28px] p-4 shadow-sm">
+          <p className="text-sm text-gray-700">
             🎯 Total Bets
           </p>
 
@@ -329,8 +329,8 @@ const handleVerifyRound = async () => {
           </h2>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] p-4 shadow-sm">
-          <p className="text-sm text-gray-500">
+        <div className="bg-white border border-gray-200 rounded-[28px] p-4 shadow-sm">
+          <p className="text-sm text-gray-700">
             🏆 Wins
           </p>
 
@@ -339,8 +339,8 @@ const handleVerifyRound = async () => {
           </h2>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] p-4 shadow-sm">
-          <p className="text-sm text-gray-500">
+        <div className="bg-white border border-gray-200 rounded-[28px] p-4 shadow-sm">
+          <p className="text-sm text-gray-700">
             🔥 Best Multiplier
           </p>
 
@@ -349,12 +349,12 @@ const handleVerifyRound = async () => {
           </h2>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] p-4 shadow-sm">
-          <p className="text-sm text-gray-500">
+        <div className="bg-white border border-gray-200 rounded-[28px] p-4 shadow-sm">
+          <p className="text-sm text-gray-700">
             💰 Profit
           </p>
 
-          <h2 className="text-2xl font-bold mt-1 text-green-500">
+          <h2 className="text-2xl font-bold mt-1 text-green-700">
             +{Number(user?.profit || 0).toLocaleString()}
           </h2>
         </div>
@@ -362,9 +362,9 @@ const handleVerifyRound = async () => {
       </div>
 
       {/* ================= BET HISTORY ================= */}
-      <details className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+      <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
 
-        <summary className="font-bold cursor-pointer text-lg">
+        <summary className="font-bold cursor-pointer text-lg text-gray-900">
           📜 Bet History
         </summary>
 
@@ -386,7 +386,7 @@ const handleVerifyRound = async () => {
                     {bet.win ? "WIN" : "LOST"} • x{bet.multiplier}
                   </p>
 
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-700 mt-1">
                     {bet.date}
                   </p>
                 </div>
@@ -405,7 +405,7 @@ const handleVerifyRound = async () => {
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-700">
               No betting history available
             </p>
           )}
@@ -415,9 +415,9 @@ const handleVerifyRound = async () => {
       </details>
 
       {/* ================= GAME LIMITS ================= */}
-      <details className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+      <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
 
-        <summary className="font-bold cursor-pointer text-lg">
+        <summary className="font-bold cursor-pointer text-lg text-gray-900">
           🎯 Game Limits
         </summary>
 
@@ -449,9 +449,9 @@ const handleVerifyRound = async () => {
       </details>
       {/* ================= FIAR VERIFICATION ================= */}
       {/* ================= PROVABLY FAIR VERIFICATION ================= */}
-<details className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+<details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
 
-  <summary className="font-bold cursor-pointer text-lg">
+  <summary className="font-bold cursor-pointer text-lg text-gray-900">
     🔐 Provably Fair System
   </summary>
 
@@ -523,9 +523,9 @@ const handleVerifyRound = async () => {
 </details>
 
       {/* ================= TRANSACTION HISTORY ================= */}
-      <details className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-10">
+      <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-10">
 
-        <summary className="font-bold cursor-pointer text-lg">
+        <summary className="font-bold cursor-pointer text-lg text-gray-900">
           💳 Transaction History
         </summary>
 
@@ -535,7 +535,7 @@ const handleVerifyRound = async () => {
             user.transactions.map((tx: TransactionItem, index: number) => (
               <div
                 key={index}
-                className="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center justify-between"
+                className="bg-gray-70 border border-gray-100 rounded-2xl p-4 flex items-center justify-between"
               >
 
                 <div>
@@ -543,7 +543,7 @@ const handleVerifyRound = async () => {
                     {tx.type}
                   </p>
 
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-700 mt-1">
                     {tx.date}
                   </p>
                 </div>

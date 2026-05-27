@@ -545,12 +545,12 @@ const placeBet = async () => {
      <div
       ref={gameAreaRef}
   style={{
-    height: 420,
+    height: 400,
     background: "#0f1118",
     borderRadius: 20,
     position: "relative",
     overflow: "hidden",
-    marginBottom: 15,
+    marginBottom: 1,
   }}
 >
   <div style={{ position: "absolute", inset: 0 }} />

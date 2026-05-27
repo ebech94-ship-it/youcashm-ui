@@ -84,26 +84,26 @@ export default function ProfilePage() {
       </div>
 
       {/* ACCOUNT */}
-      <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+      <div className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
 
         <h2 className="font-bold text-lg mb-4">👤 Account Information</h2>
 
         <div className="space-y-4">
 
-          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-            <p className="text-xs text-gray-500 mb-1">Mobile Number</p>
+          <div className="bg-gray-70 rounded-2xl p-4 border border-gray-100">
+            <p className="text-xs text-gray-700 mb-1">Mobile Number</p>
             <p className="font-semibold text-gray-800">
               {user?.phone ?? "Not Available"}
             </p>
           </div>
 
           <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-            <p className="text-xs text-gray-500 mb-1">Password</p>
+            <p className="text-xs text-gray-700 mb-1">Password</p>
             <p className="font-semibold text-gray-800">••••••••••</p>
           </div>
 
           <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-            <p className="text-xs text-gray-500 mb-1"> USER ID</p>
+            <p className="text-xs text-gray-700 mb-1"> USER ID</p>
            <p className="font-semibold text-gray-800">
             {user?.publicId ?? "N/A"}
             </p>
@@ -113,7 +113,7 @@ export default function ProfilePage() {
       </div>
 
       {/* AVATAR */}
-      <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+      <div className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
 
         <h2 className="font-bold text-lg mb-4">🎭 Choose Avatar</h2>
 
@@ -135,7 +135,7 @@ export default function ProfilePage() {
       </div>
 
       {/* SOUND */}
-      <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5 flex items-center justify-between">
+      <div className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5 flex items-center justify-between">
 
         <div>
           <h2 className="font-bold">🔊 Sound Effects</h2>
@@ -159,8 +159,8 @@ export default function ProfilePage() {
       </div>
 
       {/* SECURITY */}
-      <details className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
-        <summary className="font-bold cursor-pointer text-lg">
+      <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+        <summary className="font-bold cursor-pointer text-lg text-gray-900">
           🔐 Security Settings
         </summary>
 
@@ -175,8 +175,8 @@ export default function ProfilePage() {
       </details>
 
       {/* SUPPORT */}
-      <details className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
-        <summary className="font-bold cursor-pointer text-lg">
+      <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+        <summary className="font-bold cursor-pointer text-lg text-gray-900">
           💬 Help & Support
         </summary>
 
