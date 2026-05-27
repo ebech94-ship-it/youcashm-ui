@@ -40,10 +40,15 @@ export default function AuthScreen() {
 
       const data = await res.json();
 
-      if (data.token) {
-        saveToken(data.token);
-        router.push("/game");
-      } else {
+     if (data.token) {
+  saveToken(data.token);
+
+  if (data.user) {
+    localStorage.setItem("user", JSON.stringify(data.user));
+  }
+
+  router.push("/game");
+} else {
         alert(data.error || "Auth failed");
       }
     } catch (err) {

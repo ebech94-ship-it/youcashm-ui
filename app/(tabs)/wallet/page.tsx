@@ -17,8 +17,8 @@ type RoundData = {
 };
 type VerifyDetails = {
   valid: boolean;
-  computedHash: string;
-  originalHash: string;
+   computedCrash: number;
+  originalCrash: number;
 };
 const BASE_URL = "https://youcashm-backend.onrender.com";
 
@@ -93,7 +93,11 @@ useEffect(() => {
   return () => window.removeEventListener("storage", check);
 }, []);
 
- 
+useEffect(() => {
+  setVerifyResult(null);
+  setVerifyDetails(null);
+}, [roundData?.roundId]); 
+
 const handleWithdraw = async () => {
   const amountNum = Number(withdrawAmount);
   const phone = user?.phone || "";
@@ -152,15 +156,24 @@ const handleWithdraw = async () => {
 
 const handleVerifyRound = async () => {
   try {
+    setVerifyResult(null);
+    setVerifyDetails(null);
     setVerifying(true);
 
+    // 🔥 SNAPSHOT EVERYTHING INCLUDING ROUND ID
+    const snapshot = {
+      roundId: localStorage.getItem("lastRoundId"),
+      crashPoint: localStorage.getItem("lastCrashPoint"),
+      serverSeed: localStorage.getItem("lastServerSeed"),
+      nonce: localStorage.getItem("lastNonce"),
+    };
 
-    const hash = localStorage.getItem("lastRoundHash");
-    const serverSeed = localStorage.getItem("lastServerSeed");
-    const nonce = localStorage.getItem("lastNonce");
-
-    // ✅ SAFETY CHECK (IMPORTANT FIX)
-    if ( !hash || !serverSeed || !nonce) {
+    if (
+      !snapshot.roundId ||
+      !snapshot.crashPoint ||
+      !snapshot.serverSeed ||
+      !snapshot.nonce
+    ) {
       alert("No round data found to verify");
       setVerifying(false);
       return;
@@ -168,20 +181,20 @@ const handleVerifyRound = async () => {
 
     const res = await fetch(`${BASE_URL}/api/verify-round`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-  serverSeed,
-  nonce: Number(nonce),
-  hash,
-}),
+        roundId: snapshot.roundId,
+        serverSeed: snapshot.serverSeed,
+        nonce: Number(snapshot.nonce),
+        crashPoint: Number(snapshot.crashPoint),
+      }),
     });
 
     const data = await res.json();
 
     setVerifyDetails(data);
-setVerifyResult(data.valid);
+    setVerifyResult(data.valid);
+
   } catch (err) {
     console.log(err);
     setVerifyResult(false);
@@ -435,7 +448,8 @@ setVerifyResult(data.valid);
 
       </details>
       {/* ================= FIAR VERIFICATION ================= */}
-      <details className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+      {/* ================= PROVABLY FAIR VERIFICATION ================= */}
+<details className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
 
   <summary className="font-bold cursor-pointer text-lg">
     🔐 Provably Fair System
@@ -448,52 +462,62 @@ setVerifyResult(data.valid);
     </p>
 
     <p>
-      You can verify each round using a unique server seed and client seed combination.
+      You can verify each round using a unique server seed and nonce combination.
     </p>
 
     <p className="font-semibold text-gray-800">
       This ensures transparency, fairness, and trust in every game round.
     </p>
+
+    {/* ================= ROUND DATA ================= */}
     {roundData && (
-  <div className="bg-gray-100 p-3 rounded-xl text-xs space-y-1">
-    <p><b>Round ID:</b> {roundData.roundId}</p>
-    <p><b>Server Seed:</b> {roundData.serverSeed}</p>
-    <p><b>Nonce:</b> {roundData.nonce}</p>
-    <p><b>Hash:</b> {roundData.hash}</p>
-    <p><b>Crash Point:</b> {roundData.crashPoint}</p>
-  </div>
-)}
-<button
-  onClick={handleVerifyRound}
-  disabled={!hasRoundData || verifying}
-  className={`w-full py-3 rounded-2xl font-bold mt-4 active:scale-95 transition-all ${
-    !hasRoundData || verifying
-      ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-      : "bg-black text-white"
-  }`}
->
-  {verifying ? "VERIFYING..." : "VERIFY ROUND"}
-</button>
-{!hasRoundData && (
-  <p className="text-xs text-red-500 mt-2">
-    No round data available. Play at least one round first.
-  </p>
-)}
-{verifyResult !== null && (
-  <div
-    className={`mt-3 text-center font-bold ${
-      verifyResult ? "text-green-600" : "text-red-600"
-    }`}
-  >
-    {verifyResult ? "✔ VALID ROUND" : "❌ INVALID ROUND"}
-  </div>
-)}
-{verifyDetails && (
-  <div className="mt-2 text-xs text-gray-600 break-all">
-    <p><b>Computed:</b> {verifyDetails.computedHash}</p>
-    <p><b>Original:</b> {verifyDetails.originalHash}</p>
-  </div>
-)}
+      <div className="bg-gray-100 p-3 rounded-xl text-xs space-y-1">
+        <p><b>Round ID:</b> {roundData.roundId}</p>
+        <p><b>Server Seed:</b> {roundData.serverSeed}</p>
+        <p><b>Nonce:</b> {roundData.nonce}</p>
+        <p><b>Crash Point:</b> {roundData.crashPoint}</p>
+      </div>
+    )}
+
+    {/* ================= VERIFY BUTTON ================= */}
+    <button
+      onClick={handleVerifyRound}
+      disabled={!hasRoundData || verifying}
+      className={`w-full py-3 rounded-2xl font-bold mt-4 active:scale-95 transition-all shadow-lg ${
+        !hasRoundData || verifying
+          ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+          : "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-[0_0_18px_rgba(99,102,241,0.4)]"
+      }`}
+    >
+      {verifying ? "VERIFYING..." : "VERIFY ROUND"}
+    </button>
+
+    {/* ================= NO DATA WARNING ================= */}
+    {!hasRoundData && (
+      <p className="text-xs text-red-500 mt-2">
+        No round data available. Play at least one round first.
+      </p>
+    )}
+
+    {/* ================= RESULT ================= */}
+    {verifyResult !== null && (
+      <div
+        className={`mt-3 text-center font-bold ${
+          verifyResult ? "text-green-600" : "text-red-600"
+        }`}
+      >
+        {verifyResult ? "✔ VALID ROUND" : "❌ INVALID ROUND"}
+      </div>
+    )}
+
+    {/* ================= DETAILS ================= */}
+    {verifyDetails && (
+      <div className="mt-2 text-xs text-gray-600 break-all bg-gray-50 p-3 rounded-xl space-y-1">
+        <p><b>Computed Crash:</b> {verifyDetails.computedCrash}</p>
+        <p><b>Original Crash:</b> {verifyDetails.originalCrash}</p>
+      </div>
+    )}
+
   </div>
 
 </details>
@@ -551,80 +575,155 @@ setVerifyResult(data.valid);
           <DepositModal />
 
       {/* ================= WITHDRAW MODAL ================= */}
-      {showWithdrawModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center px-4">
+{showWithdrawModal && (
+  <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-start justify-center px-4 py-8 animate-in fade-in duration-300">
 
-          <div className="bg-white w-full max-w-sm rounded-[32px] p-5 shadow-2xl animate-in fade-in zoom-in duration-200">
+    <div className="relative w-full max-w-md overflow-hidden rounded-[34px] border border-red-500/20 bg-[#0b111c] shadow-[0_0_60px_rgba(239,68,68,0.25)]">
 
-            <div className="flex items-center justify-between mb-5">
+      {/* TOP GLOW */}
+      <div className="absolute -top-20 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full bg-red-500/20 blur-3xl"></div>
 
-              <h2 className="text-xl font-bold">
-                Withdraw Funds
-              </h2>
-            
-              <button
-                onClick={() => setShowWithdrawModal(false)}
-                className="w-10 h-10 rounded-full bg-gray-100 text-xl"
-              >
-                ×
-              </button>
+      {/* CONTENT (SCROLL AREA) */}
+      <div className="relative z-10 p-6 max-h-[85vh] overflow-y-auto scrollbar-hide">
 
+        {/* HEADER */}
+        <div className="flex items-center justify-between mb-6">
+
+          <div>
+            <h2 className="text-2xl font-extrabold text-white">
+              Withdraw Funds
+            </h2>
+
+            <p className="text-sm text-slate-400 mt-1">
+              Secure Mobile Money Withdrawal
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowWithdrawModal(false)}
+            className="w-11 h-11 rounded-full bg-white/5 border border-white/10 text-white text-xl hover:bg-white/10 transition"
+          >
+            ×
+          </button>
+
+        </div>
+
+        {/* WARNING INFO */}
+        <div className="mb-5 rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-4">
+
+          <p className="text-sm leading-6 text-yellow-200">
+            ⚠️ Withdrawals are processed securely. Depending on network conditions, it may take a short time to complete.
+          </p>
+
+        </div>
+
+        {/* PHONE */}
+        <div className="mb-5">
+
+          <label className="text-sm text-slate-400 mb-2 block">
+            Mobile Money Number
+          </label>
+
+          <input
+            type="text"
+            value={user?.phone || ""}
+            readOnly
+            className="w-full rounded-2xl border border-white/10 bg-[#111827] px-4 py-4 text-white outline-none"
+          />
+
+        </div>
+
+        {/* AMOUNT */}
+        <div className="mb-4">
+
+          <div className="flex items-center justify-between">
+
+            <label className="text-sm text-slate-400">
+              Withdrawal Amount
+            </label>
+
+            <span className="text-xs text-red-400">
+              500 - 500,000 FCFA
+            </span>
+
+          </div>
+
+          <input
+            type="number"
+            placeholder="Enter withdrawal amount"
+            value={withdrawAmount}
+            onChange={(e) => setWithdrawAmount(e.target.value)}
+            className="w-full mt-2 rounded-2xl border border-white/10 bg-[#111827] px-4 py-4 text-white outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition"
+          />
+
+        </div>
+
+        {/* QUICK BUTTONS */}
+        <div className="grid grid-cols-3 gap-3 mt-4 mb-6">
+
+          {[500, 1000, 2000, 5000, 10000, 25000].map((amt) => (
+            <button
+              key={amt}
+              onClick={() => setWithdrawAmount(String(amt))}
+              className="rounded-xl bg-white/5 border border-white/10 py-3 text-sm font-bold text-slate-300 hover:bg-red-500/20 hover:text-white transition"
+            >
+              {amt.toLocaleString()}
+            </button>
+          ))}
+
+        </div>
+
+        {/* INFO BOX */}
+        <div className="mb-6 rounded-2xl bg-white/5 border border-white/10 p-4">
+
+          <div className="flex items-start gap-3">
+
+            <div className="text-2xl">
+              💸
             </div>
 
-            <div className="space-y-4">
+            <div>
 
-              <div>
-                <label className="text-sm text-gray-500">
-                  Mobile Number
-                </label>
+              <p className="text-sm text-white font-semibold">
+                Secure Withdrawal Processing
+              </p>
 
-                <input
-                  type="text"
-                  value={user?.phone || ""}
-                  readOnly
-                  className="w-full mt-2 border border-gray-200 rounded-2xl px-4 py-3 outline-none bg-gray-50"
-                />
-              </div>
+              <p className="text-xs leading-5 text-slate-400 mt-1">
+                Withdrawals are verified and processed automatically to ensure safety and accuracy.
+              </p>
 
-              <div>
-                <label className="text-sm text-gray-500">
-                  Amount
-                </label>
-                  <p className="text-xs text-gray-400 mt-1">
-  Min: 500 FCFA • Max: 500,000 FCFA
-</p>
-
-                <input
-                  type="number"
-                  placeholder="Enter amount"
-                  value={withdrawAmount}
-                  onChange={(e) =>
-                    setWithdrawAmount(e.target.value)
-                  }
-                  className="w-full mt-2 border border-gray-200 rounded-2xl px-4 py-3 outline-none focus:border-red-500"
-                />
-              </div>
-
-             <button
-  onClick={handleWithdraw}
-  disabled={!withdrawAmount || Number(withdrawAmount) <= 0}
-  className={`w-full py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95 ${
-    !withdrawAmount || Number(withdrawAmount) <= 0
-      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-      : "bg-gradient-to-r from-red-500 to-pink-500 text-white"
-  }`}
->
-  Continue Withdrawal
-</button>
-<p className="text-xs text-amber-500 text-center leading-5">
-  ⚠️ Withdrawal processing charges may occasionally be applied by MTN or Orange Money.
-</p>
             </div>
 
           </div>
 
         </div>
-      )}
+
+        {/* BUTTON */}
+        <button
+          onClick={handleWithdraw}
+          disabled={!withdrawAmount || Number(withdrawAmount) <= 0}
+          className={`relative w-full overflow-hidden rounded-2xl py-4 font-extrabold transition-all duration-300 ${
+            !withdrawAmount || Number(withdrawAmount) <= 0
+              ? "bg-slate-600 text-white cursor-not-allowed"
+              : "bg-gradient-to-r from-red-500 via-pink-500 to-red-400 text-white shadow-[0_0_30px_rgba(239,68,68,0.5)] active:scale-[0.98]"
+          }`}
+        >
+
+          Continue Withdrawal
+
+        </button>
+
+        {/* FOOT NOTE */}
+        <p className="mt-5 text-center text-xs leading-5 text-slate-500">
+
+          ⚠️ Withdrawal charges may apply depending on MTN or Orange policies.
+
+        </p>
+
+      </div>
+    </div>
+  </div>
+)}
 
     </div>
   );
