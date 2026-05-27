@@ -317,50 +317,57 @@ const handleVerifyRound = async () => {
       </div>
 
       {/* ================= LIVE STATS ================= */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+<div className="grid grid-cols-2 gap-3 mb-6">
 
-        <div className="bg-white border border-gray-200 rounded-[28px] p-4 shadow-sm">
-          <p className="text-sm text-gray-700">
-            🎯 Total Bets
-          </p>
+  <div className="bg-white border-2 border-gray-300 rounded-[28px] p-4 shadow-md">
 
-          <h2 className="text-2xl font-bold mt-1">
-            {user?.totalBets || 0}
-          </h2>
-        </div>
+    <p className="text-sm font-semibold text-gray-800">
+      🎯 Total Bets
+    </p>
 
-        <div className="bg-white border border-gray-200 rounded-[28px] p-4 shadow-sm">
-          <p className="text-sm text-gray-700">
-            🏆 Wins
-          </p>
+    <h2 className="text-3xl font-extrabold text-black mt-2">
+      {user?.totalBets || 0}
+    </h2>
 
-          <h2 className="text-2xl font-bold mt-1">
-            {user?.wins || 0}
-          </h2>
-        </div>
+  </div>
 
-        <div className="bg-white border border-gray-200 rounded-[28px] p-4 shadow-sm">
-          <p className="text-sm text-gray-700">
-            🔥 Best Multiplier
-          </p>
+  <div className="bg-white border-2 border-gray-300 rounded-[28px] p-4 shadow-md">
 
-          <h2 className="text-2xl font-bold mt-1">
-            x{user?.bestMultiplier || 0}
-          </h2>
-        </div>
+    <p className="text-sm font-semibold text-gray-800">
+      🏆 Wins
+    </p>
 
-        <div className="bg-white border border-gray-200 rounded-[28px] p-4 shadow-sm">
-          <p className="text-sm text-gray-700">
-            💰 Profit
-          </p>
+    <h2 className="text-3xl font-extrabold text-black mt-2">
+      {user?.wins || 0}
+    </h2>
 
-          <h2 className="text-2xl font-bold mt-1 text-green-700">
-            +{Number(user?.profit || 0).toLocaleString()}
-          </h2>
-        </div>
+  </div>
 
-      </div>
+  <div className="bg-white border-2 border-gray-300 rounded-[28px] p-4 shadow-md">
 
+    <p className="text-sm font-semibold text-gray-800">
+      🔥 Best Multiplier
+    </p>
+
+    <h2 className="text-3xl font-extrabold text-black mt-2">
+      x{user?.bestMultiplier || 0}
+    </h2>
+
+  </div>
+
+  <div className="bg-white border-2 border-gray-300 rounded-[28px] p-4 shadow-md">
+
+    <p className="text-sm font-semibold text-gray-800">
+      💰 Profit
+    </p>
+
+    <h2 className="text-3xl font-extrabold text-green-700 mt-2">
+      +{Number(user?.profit || 0).toLocaleString()}
+    </h2>
+
+  </div>
+
+</div>
       {/* ================= BET HISTORY ================= */}
       <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
 
