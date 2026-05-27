@@ -414,39 +414,54 @@ const handleVerifyRound = async () => {
 
       </details>
 
-      {/* ================= GAME LIMITS ================= */}
-      <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+     {/* ================= GAME LIMITS ================= */}
+<details className="bg-white border border-gray-300 rounded-[28px] shadow-md p-5 mb-5">
 
-        <summary className="font-bold cursor-pointer text-lg text-gray-900">
-          🎯 Game Limits
-        </summary>
+  <summary className="font-extrabold cursor-pointer text-xl text-black">
+    🎯 Game Limits
+  </summary>
 
-        <div className="mt-5">
+  <div className="mt-5">
 
-          <div className="flex justify-between border-b py-3">
-            <span>Minimum Bet</span>
-            <span className="font-bold">
-              50 FCFA
-            </span>
-          </div>
+    <div className="flex justify-between items-center border-b border-gray-200 py-4">
 
-          <div className="flex justify-between border-b py-3">
-            <span>Maximum Bet</span>
-            <span className="font-bold">
-              5,000 FCFA
-            </span>
-          </div>
+      <span className="text-gray-900 font-semibold text-[15px]">
+        Minimum Bet
+      </span>
 
-          <div className="flex justify-between py-3">
-            <span>Maximum Payout</span>
-            <span className="font-bold">
-              1,000,000 FCFA
-            </span>
-          </div>
+      <span className="font-extrabold text-black text-[15px]">
+        50 FCFA
+      </span>
 
-        </div>
+    </div>
 
-      </details>
+    <div className="flex justify-between items-center border-b border-gray-200 py-4">
+
+      <span className="text-gray-900 font-semibold text-[15px]">
+        Maximum Bet
+      </span>
+
+      <span className="font-extrabold text-black text-[15px]">
+        5,000 FCFA
+      </span>
+
+    </div>
+
+    <div className="flex justify-between items-center py-4">
+
+      <span className="text-gray-900 font-semibold text-[15px]">
+        Maximum Payout
+      </span>
+
+      <span className="font-extrabold text-black text-[15px]">
+        1,000,000 FCFA
+      </span>
+
+    </div>
+
+  </div>
+
+</details>
       {/* ================= FIAR VERIFICATION ================= */}
       {/* ================= PROVABLY FAIR VERIFICATION ================= */}
 <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
