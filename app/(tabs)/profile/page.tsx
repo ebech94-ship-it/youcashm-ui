@@ -53,167 +53,274 @@ export default function ProfilePage() {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  return (
-    <div className="relative min-h-screen bg-white p-4 pb-24 overflow-y-auto">
+    return (
+  <div className="relative min-h-screen bg-gray-100 p-4 pb-24 overflow-y-auto">
 
-      {/* BACKGROUND */}
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full blur-3xl opacity-30" />
-        <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-200 rounded-full blur-3xl opacity-30" />
-      </div>
+    {/* BACKGROUND */}
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
 
-      {/* HEADER */}
-      <div className="rounded-[32px] p-6 text-center mb-6 bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-xl">
+      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-300 rounded-full blur-3xl opacity-20" />
 
-        <div className="w-24 h-24 mx-auto rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-5xl border border-white/30 shadow-md">
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-yellow-300 rounded-full blur-3xl opacity-20" />
+
+    </div>
+
+    {/* ================= HEADER ================= */}
+    <div className="relative overflow-hidden rounded-[32px] p-6 text-center mb-6 bg-gradient-to-br from-[#071226] via-[#0b1f3a] to-[#133b6b] border-2 border-yellow-500 shadow-[0_0_40px_rgba(15,23,42,0.35)]">
+
+      {/* GOLD GLOW */}
+      <div className="absolute -top-16 -right-16 w-40 h-40 bg-yellow-400/20 rounded-full blur-3xl"></div>
+
+      <div className="relative z-10">
+
+        {/* AVATAR */}
+        <div className="w-24 h-24 mx-auto rounded-full bg-yellow-400/10 flex items-center justify-center text-5xl border-2 border-yellow-400 shadow-lg">
+
           {selectedAvatar}
+
         </div>
 
-        <h1 className="text-2xl font-bold mt-4">Player Profile</h1>
+        {/* TITLE */}
+        <h1 className="text-4xl font-black tracking-[2px] uppercase text-yellow-300 mt-5">
 
-        <p className="text-sm text-white/80 mt-1">
+          PROFILE
+
+        </h1>
+
+        {/* PHONE */}
+        <p className="text-sm text-white font-medium mt-2 break-all">
+
           {user?.phone ?? "No Mobile Number"}
+
         </p>
 
+        {/* SHARE BUTTON */}
         <button
           onClick={handleShare}
-          className="mt-4 bg-white text-black px-5 py-3 rounded-2xl font-bold shadow-md active:scale-95 transition"
+          className="mt-5 bg-yellow-400 text-[#071226] px-6 py-3 rounded-2xl font-extrabold shadow-lg active:scale-95 transition-all"
         >
+
           👥 Invite Friends
+
         </button>
+
       </div>
 
-      {/* ACCOUNT */}
-      <div className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+    </div>
 
-        <h2 className="font-bold text-lg mb-4">👤 Account Information</h2>
+    {/* ================= ACCOUNT ================= */}
+    <div className="bg-white border-2 border-gray-300 rounded-[28px] shadow-md p-5 mb-5">
 
-        <div className="space-y-4">
+      <h2 className="text-2xl font-extrabold text-[#071226] mb-5">
 
-          <div className="bg-gray-70 rounded-2xl p-4 border border-gray-100">
-            <p className="text-xs text-gray-700 mb-1">Mobile Number</p>
-            <p className="font-semibold text-gray-800">
-              {user?.phone ?? "Not Available"}
-            </p>
-          </div>
+        👤 Account Information
 
-          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-            <p className="text-xs text-gray-700 mb-1">Password</p>
-            <p className="font-semibold text-gray-800">••••••••••</p>
-          </div>
+      </h2>
 
-          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-            <p className="text-xs text-gray-700 mb-1"> USER ID</p>
-           <p className="font-semibold text-gray-800">
-            {user?.publicId ?? "N/A"}
-            </p>
-          </div>
+      <div className="space-y-4">
 
-        </div>
-      </div>
+        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-300">
 
-      {/* AVATAR */}
-      <div className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
+          <p className="text-xs font-bold uppercase tracking-wide text-gray-700 mb-2">
 
-        <h2 className="font-bold text-lg mb-4">🎭 Choose Avatar</h2>
+            Mobile Number
 
-        <div className="flex flex-wrap gap-3">
-          {avatars.map((avatar) => (
-            <button
-              key={avatar}
-              onClick={() => setSelectedAvatar(avatar)}
-              className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-gray-100 transition active:scale-95 ${
-                selectedAvatar === avatar
-                  ? "border-2 border-blue-500 scale-110 shadow-md"
-                  : ""
-              }`}
-            >
-              {avatar}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* SOUND */}
-      <div className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5 flex items-center justify-between">
-
-        <div>
-          <h2 className="font-bold">🔊 Sound Effects</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Enable game sounds & effects
           </p>
+
+          <p className="font-extrabold text-black text-[16px] break-all">
+
+            {user?.phone ?? "Not Available"}
+
+          </p>
+
         </div>
 
-        <button
-          onClick={() => setSoundEnabled((v) => !v)}
-          className={`w-14 h-8 rounded-full p-1 transition ${
-            soundEnabled ? "bg-green-500" : "bg-gray-300"
-          }`}
-        >
-          <div
-            className={`w-6 h-6 bg-white rounded-full transition ${
-              soundEnabled ? "translate-x-6" : ""
-            }`}
-          />
-        </button>
+        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-300">
+
+          <p className="text-xs font-bold uppercase tracking-wide text-gray-700 mb-2">
+
+            Password
+
+          </p>
+
+          <p className="font-extrabold text-black text-[16px]">
+
+            ••••••••••
+
+          </p>
+
+        </div>
+
+        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-300">
+
+          <p className="text-xs font-bold uppercase tracking-wide text-gray-700 mb-2">
+
+            User ID
+
+          </p>
+
+          <p className="font-extrabold text-black text-[16px] break-all">
+
+            {user?.publicId ?? "N/A"}
+
+          </p>
+
+        </div>
+
       </div>
 
-      {/* SECURITY */}
-      <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
-        <summary className="font-bold cursor-pointer text-lg text-gray-900">
-          🔐 Security Settings
-        </summary>
+    </div>
 
-        <div className="mt-5 space-y-3">
-          <button className="w-full bg-gray-100 py-3 rounded-2xl font-semibold">
-            Change Password
-          </button>
-          <button className="w-full bg-gray-100 py-3 rounded-2xl font-semibold">
-            Verify Phone Number
-          </button>
-        </div>
-      </details>
+    {/* ================= AVATAR ================= */}
+    <div className="bg-white border-2 border-gray-300 rounded-[28px] shadow-md p-5 mb-5">
 
-      {/* SUPPORT */}
-      <details className="bg-white border border-gray-200 rounded-[28px] shadow-sm p-5 mb-5">
-        <summary className="font-bold cursor-pointer text-lg text-gray-900">
-          💬 Help & Support
-        </summary>
+      <h2 className="text-2xl font-extrabold text-[#071226] mb-5">
 
-        <div className="mt-5 space-y-3">
+        🎭 Choose Avatar
+
+      </h2>
+
+      <div className="flex flex-wrap gap-3">
+
+        {avatars.map((avatar) => (
 
           <button
-            onClick={handleSupport}
-            className="w-full bg-gray-100 py-3 rounded-2xl font-semibold"
+            key={avatar}
+            onClick={() => setSelectedAvatar(avatar)}
+            className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl bg-gray-100 border-2 transition-all active:scale-95 ${
+              selectedAvatar === avatar
+                ? "border-blue-600 scale-110 shadow-lg bg-blue-50"
+                : "border-gray-300"
+            }`}
           >
-            💬 Contact Support
+
+            {avatar}
+
           </button>
 
-          <button
-            onClick={() => router.push("/terms")}
-            className="w-full bg-gray-100 py-3 rounded-2xl font-semibold"
-          >
-            📜 Terms & Conditions
-          </button>
+        ))}
 
-          <button
-            onClick={() => router.push("/privacy")}
-            className="w-full bg-gray-100 py-3 rounded-2xl font-semibold"
-          >
-            🔒 Privacy Policy
-          </button>
+      </div>
 
-        </div>
-      </details>
+    </div>
 
-      {/* LOGOUT */}
+    {/* ================= SOUND ================= */}
+    <div className="bg-white border-2 border-gray-300 rounded-[28px] shadow-md p-5 mb-5 flex items-center justify-between">
+
+      <div>
+
+        <h2 className="text-lg font-extrabold text-[#071226]">
+
+          🔊 Sound Effects
+
+        </h2>
+
+        <p className="text-sm font-medium text-gray-700 mt-1">
+
+          Enable game sounds & effects
+
+        </p>
+
+      </div>
+
       <button
-        onClick={handleLogout}
-        className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-4 rounded-[28px] font-bold mb-10"
+        onClick={() => setSoundEnabled((v) => !v)}
+        className={`w-16 h-9 rounded-full p-1 transition-all ${
+          soundEnabled
+            ? "bg-green-500"
+            : "bg-gray-400"
+        }`}
       >
-        🚪 Logout
+
+        <div
+          className={`w-7 h-7 bg-white rounded-full transition-all ${
+            soundEnabled ? "translate-x-7" : ""
+          }`}
+        />
+
       </button>
 
     </div>
-  );
+
+    {/* ================= SECURITY ================= */}
+    <details className="bg-white border-2 border-gray-300 rounded-[28px] shadow-md p-5 mb-5">
+
+      <summary className="font-extrabold cursor-pointer text-xl text-[#071226]">
+
+        🔐 Security Settings
+
+      </summary>
+
+      <div className="mt-5 space-y-3">
+
+        <button className="w-full bg-gray-100 border border-gray-300 text-black py-4 rounded-2xl font-extrabold active:scale-95 transition-all">
+
+          Change Password
+
+        </button>
+
+        <button className="w-full bg-gray-100 border border-gray-300 text-black py-4 rounded-2xl font-extrabold active:scale-95 transition-all">
+
+          Verify Phone Number
+
+        </button>
+
+      </div>
+
+    </details>
+
+    {/* ================= SUPPORT ================= */}
+    <details className="bg-white border-2 border-gray-300 rounded-[28px] shadow-md p-5 mb-5">
+
+      <summary className="font-extrabold cursor-pointer text-xl text-[#071226]">
+
+        💬 Help & Support
+
+      </summary>
+
+      <div className="mt-5 space-y-3">
+
+        <button
+          onClick={handleSupport}
+          className="w-full bg-gray-100 border border-gray-300 text-black py-4 rounded-2xl font-extrabold active:scale-95 transition-all"
+        >
+
+          💬 Contact Support
+
+        </button>
+
+        <button
+          onClick={() => router.push("/terms")}
+          className="w-full bg-gray-100 border border-gray-300 text-black py-4 rounded-2xl font-extrabold active:scale-95 transition-all"
+        >
+
+          📜 Terms & Conditions
+
+        </button>
+
+        <button
+          onClick={() => router.push("/privacy")}
+          className="w-full bg-gray-100 border border-gray-300 text-black py-4 rounded-2xl font-extrabold active:scale-95 transition-all"
+        >
+
+          🔒 Privacy Policy
+
+        </button>
+
+      </div>
+
+    </details>
+
+    {/* ================= LOGOUT ================= */}
+    <button
+      onClick={handleLogout}
+      className="w-full bg-gradient-to-r from-red-500 via-pink-500 to-red-600 text-white py-4 rounded-[28px] font-extrabold text-lg shadow-lg active:scale-[0.98] transition-all mb-10"
+    >
+
+      🚪 Logout
+
+    </button>
+
+  </div>
+);
 }
