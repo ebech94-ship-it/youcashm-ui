@@ -44,7 +44,8 @@ export default function BettingPanel({
   playersBetting,
 }: Props) {
   const quickAmounts = [100, 200, 500, 1000];
-
+const [loadingBet, setLoadingBet] = useState(false);
+const [loadingCashout, setLoadingCashout] = useState(false);
   return (
     <div style={styles.container}>
 
@@ -186,17 +187,35 @@ export default function BettingPanel({
       <div style={styles.actionRow}>
 
         <button
-          onClick={placeBet}
+          onClick={async () => {
+  if (loadingBet) return;
+
+  try {
+    setLoadingBet(true);
+    await placeBet();
+  } finally {
+    setLoadingBet(false);
+  }
+}}
           style={styles.betButton}
         >
-          BET
+        {loadingBet ? "BETTING..." : "BET"}
         </button>
 
         <button
-          onClick={cashout}
+          onClick={async () => {
+  if (loadingCashout) return;
+
+  try {
+    setLoadingCashout(true);
+    await cashout();
+  } finally {
+    setLoadingCashout(false);
+  }
+}}
           style={styles.cashoutButton}
         >
-          CASHOUT
+          {loadingCashout ? "CASHING OUT..." : "CASHOUT"}
         </button>
 
       </div>

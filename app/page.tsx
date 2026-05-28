@@ -11,7 +11,42 @@ export default function LandingPage() {
 
   const [authMode, setAuthMode] = useState<"login" | "join">("login");
   const [openAuth, setOpenAuth] = useState(false);
+  const [loadingServer, setLoadingServer] = useState(false);
+const [loadingMsg, setLoadingMsg] = useState("Waking server...");
+const [retryCount, setRetryCount] = useState(0);
 
+const tryWakeServer = async (mode: "login" | "join", attempt = 0) => {
+  setLoadingServer(true);
+  setLoadingMsg(attempt === 0 ? "Waking server..." : "Retrying connection...");
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`);
+
+    if (res.ok) {
+      setLoadingServer(false);
+      setRetryCount(0);
+
+      setAuthMode(mode);
+      setTimeout(() => setOpenAuth(true), 200);
+      return;
+    }
+
+    throw new Error("Server not ready");
+  } catch (err) {
+    if (attempt >= 4) {
+      setLoadingMsg("Server still waking. Try again.");
+      setLoadingServer(false);
+      return;
+    }
+
+    const delay = 1200 * (attempt + 1);
+
+    setTimeout(() => {
+      setRetryCount(attempt + 1);
+      tryWakeServer(mode, attempt + 1);
+    }, delay);
+  }
+};
   /* 🔥 LOCK BODY SCROLL WHEN NEEDED (FIX DOUBLE SCROLL ISSUE) */
   useEffect(() => {
     if (openAuth) {
@@ -76,13 +111,7 @@ export default function LandingPage() {
           ? "#000"
           : "#fff",
     }}
-  onClick={() => {
-  setAuthMode("login");
-
-  setTimeout(() => {
-    setOpenAuth(true);
-  }, 120);
-}}
+onClick={() => tryWakeServer("login")}
   >
     Login
   </button>
@@ -99,13 +128,9 @@ export default function LandingPage() {
           ? "#000"
           : "#fff",
     }}
-    onClick={() => {
-  setAuthMode("join");
+   onClick={() => tryWakeServer("join")}
 
-  setTimeout(() => {
-    setOpenAuth(true);
-  }, 150);
-}}
+ 
   >
     Join Now
   </button>
@@ -212,6 +237,26 @@ export default function LandingPage() {
           </p>
         </div>
       </div>
+      {loadingServer && (
+  <div style={styles.loadingOverlay}>
+    <div style={styles.loadingBox}>
+      <div style={styles.spinner}></div>
+
+      <h2 style={{ marginTop: 15 }}>{loadingMsg}</h2>
+
+      <p style={{ color: "#9ca3af", marginTop: 10 }}>
+        Attempt: {retryCount + 1}
+      </p>
+
+      <button
+        onClick={() => setLoadingServer(false)}
+        style={styles.cancelBtn}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
 
       {/* MODAL */}
       {openAuth && (
@@ -487,5 +532,43 @@ powered: {
   color: "#94a3b8",
   fontSize: 13,
   letterSpacing: 1,
+},
+loadingOverlay: {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.75)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 9999,
+},
+
+loadingBox: {
+  background: "#0b0f19",
+  border: "1px solid #1f2937",
+  padding: 25,
+  borderRadius: 18,
+  textAlign: "center",
+  width: 300,
+},
+
+spinner: {
+  width: 45,
+  height: 45,
+  border: "4px solid #1f2937",
+  borderTop: "4px solid #22c55e",
+  borderRadius: "50%",
+  margin: "0 auto",
+  animation: "spin 1s linear infinite",
+},
+
+cancelBtn: {
+  marginTop: 20,
+  padding: "10px 18px",
+  background: "#ef4444",
+  color: "white",
+  border: "none",
+  borderRadius: 10,
+  cursor: "pointer",
 },
 };
