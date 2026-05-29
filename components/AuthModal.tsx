@@ -29,8 +29,8 @@ const submitAuth = async () => {
     setLoading(true);
     setError("");
 
-   const BASE_URL = "https://youcashm-backend.onrender.com";
-
+  const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const endpoint =
   mode === "login"
     ? `${BASE_URL}/auth/login`

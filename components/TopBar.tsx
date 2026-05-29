@@ -31,8 +31,8 @@ const balanceUSD = balanceXAF * XAF_TO_USD;
   const getMultiplierColor = (value: number) => {
     if (value < 2) return "#ffffff";
     if (value < 10) return "#7c3aed";
-    if (value < 20) return "#22c55e";
-    if (value < 50) return "#facc15";
+    if (value < 20) return "#11fc4fff";
+    if (value < 50) return "#e3fa15ff";
     return "#ef4444";
   };
 
@@ -57,14 +57,24 @@ const balanceUSD = balanceXAF * XAF_TO_USD;
           📜
         </button>
 
-        <div style={styles.miniHistory}>
-          {history.slice(0, 3).map((item, i) => (
-            <span key={i} style={styles.miniChip}>
-              {Number(item).toFixed(2)}x
-            </span>
-          ))}
-        </div>
+ <div className="flex gap-1 mt-2 overflow-x-auto max-w-[1000px] no-scrollbar">
+  {history.slice(0, 18).map((h, i) => {
+    const color = getMultiplierColor(h);
 
+    return (
+      <span
+        key={i}
+        style={{
+          color,
+          borderColor: color,
+        }}
+        className="border px-2 py-1 rounded whitespace-nowrap"
+      >
+        {h.toFixed(2)}x
+      </span>
+    );
+  })}
+</div>
       </div>
 
       {/* RIGHT */}
@@ -235,25 +245,35 @@ const styles: Record<string, React.CSSProperties> = {
   },
 
   balance: {
-    color: "#fff",
+    color: "#65d107ff",
     fontWeight: "bold",
     marginTop: "4px",
   },
 
   usd: {
-    color: "#888",
+    color: "#552af2ff",
     fontSize: "11px",
     marginTop: "2px",
   },
 
-  addBtn: {
-    background: "#00ff88",
-    border: "none",
-    padding: "10px 12px",
-    borderRadius: "10px",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
+ addBtn: {
+  background: "#25cb0fff",
+  border: "2px solid black",
+
+  width: "50px",
+  height: "50px",
+
+  borderRadius: "50%",
+  fontSize: "34px",
+  fontWeight: "bold",
+  cursor: "pointer",
+
+  marginRight: "16px",
+
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+},
 overlay: {
   position: "fixed",
   top: 0,

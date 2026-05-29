@@ -20,7 +20,7 @@ type VerifyDetails = {
    computedCrash: number;
   originalCrash: number;
 };
-const BASE_URL = "https://youcashm-backend.onrender.com";
+const BASE_URL = "http://localhost:5000";
 
 export default function WalletPage() {
   const { user, setShowDepositModal } = useAuth();

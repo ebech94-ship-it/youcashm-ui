@@ -84,6 +84,7 @@ const tryWakeServer = async (mode: "login" | "join", attempt = 0) => {
     alt="youCash logo"
     width={720}
     height={320}
+     loading="eager"
     style={styles.sideLogo}
   />
 

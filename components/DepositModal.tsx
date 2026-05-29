@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthProvider";
 import { useState } from "react";
 
-const BASE_URL = "https://youcashm-backend.onrender.com";
+const BASE_URL = "http://localhost:5000";
 export default function DepositModal() {
   const { showDepositModal, setShowDepositModal, user,
   } = useAuth();

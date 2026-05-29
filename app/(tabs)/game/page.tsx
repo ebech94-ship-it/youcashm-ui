@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import socket from "@/services/socket";
+import socket from "@/lib/socket";
 import TopBar from "@/components/TopBar";
 import BettingPanel from "@/components/BetPanel";
 import Leaderboard, { LiveBetRow } from "@/components/Leaderboard";
@@ -47,6 +47,18 @@ type RoundCrashData = {
   serverSeed?: string;
   nonce?: number;
 };
+type SyncStateData = {
+  roundId: string | null;
+  status: "WAITING" | "RUNNING" | "CRASHED";
+  multiplier: number;
+  crashPoint: number | null;
+};
+
+type HistorySyncData = {
+  roundId: string;
+  crashPoint: number;
+  time: number;
+}[];
 
 export default function GameScreen() {
   // ======================
@@ -60,7 +72,19 @@ const { user, roundHistory, setRoundHistory, setShowDepositModal } = useAuth();
 
   const [roundId, setRoundId] = useState<string | null>(null);
   const [betId, setBetId] = useState<string | null>(null);
-
+const [betState, setBetState] = useState<
+  "IDLE" |
+  "LOCKED" |
+  "ACTIVE" |
+  "CASHED_OUT" |
+  "LOST"
+>("IDLE");
+const [lockedBetAmount, setLockedBetAmount] = useState(0);
+const [betSlips, setBetSlips] = useState([
+  { id: 1, amount: "100" }
+]);
+const [betIds, setBetIds] = useState<string[]>([]);
+const [betHistory, setBetHistory] = useState<any[]>([]);
 
   const [onlineUsers, setOnlineUsers] = useState(0);
   const [playersBetting, setPlayersBetting] = useState(0);
@@ -78,6 +102,7 @@ const [nextRoundCountdown, setNextRoundCountdown] = useState(5);
 const [isBettingPhase, setIsBettingPhase] = useState(true);
 const [crashPoint, setCrashPoint] = useState<number | null>(null);
 const [smoke, setSmoke] = useState<Smoke[]>([]);
+
 
 
   // ======================
@@ -103,8 +128,10 @@ const [smoke, setSmoke] = useState<Smoke[]>([]);
 const smokeTimerRef = useRef(0);
   const gameAreaRef = useRef<HTMLDivElement | null>(null);
 const gameWidth = useRef(0);
+const countdownRef = useRef(0);
+const countdownMaxRef = useRef(5);
 
-  
+  const isSyncedRef = useRef(false);
   // ======================
   // PLANE POSITION STATE
   // ======================
@@ -128,7 +155,7 @@ const [plane, setPlane] = useState({
 
   try {
     const res = await fetch(
-      "https://youcashm-backend.onrender.com/api/cashout",
+      "https://localhost:5000/api/cashout",
       {
         method: "POST",
         headers: {
@@ -146,19 +173,43 @@ const [plane, setPlane] = useState({
       return;
     }
 
-    setBetId(null);
+   if (data.success) {
+  setBetId(null);
+
+  setBetState("CASHED_OUT");
+
+  setTimeout(() => {
+    setBetState("IDLE");
+  }, 2500);
+}
   } catch {
     cashoutLock.current = false;
   }
 }, [betId]);
 
+const addBetSlip = () => {
+  setBetSlips((prev) => [
+    ...prev,
+    { id: Date.now(), amount: "100" }
+  ]);
+};
+const removeBetSlip = (id: number) => {
+  setBetSlips((prev) => prev.filter(b => b.id !== id));
+};
+const updateBetSlip = (id: number, value: string) => {
+  setBetSlips((prev) =>
+    prev.map((b) =>
+      b.id === id ? { ...b, amount: value } : b
+    )
+  );
+};
   // ======================
   // SOCKET EVENTS
   // ======================
+// ======================
+// SOCKET EVENTS (FIXED)
+// ======================
 useEffect(() => {
-  // ======================
-  // CLEAN OLD LISTENERS
-  // ======================
   socket.off("onlineUsers");
   socket.off("playersBetting");
   socket.off("betUpdate");
@@ -167,143 +218,63 @@ useEffect(() => {
   socket.off("roundCrash");
   socket.off("roundWaiting");
 
-  // ======================
-  // ONLINE USERS
-  // ======================
-  socket.on("onlineUsers", (data: OnlineUsersData) => {
-    setOnlineUsers(data.count || 0);
-  });
+  socket.emit("syncRequest");
 
   // ======================
-  // PLAYERS BETTING
+  // SYNC STATE (FIXED)
   // ======================
-  socket.on("playersBetting", (data: PlayersBettingData) => {
-    setPlayersBetting(data.count || 0);
-  });
-
-  // ======================
-  // LIVE BETTING BOARD
-  // ======================
-  socket.on("betUpdate", (data: LiveBetRow) => {
-    setLiveBoard((prev) => {
-      const exists = prev.find((b) => b.id === data.id);
-
-      if (exists) {
-        return prev.map((b) =>
-          b.id === data.id ? { ...b, ...data } : b
-        );
-      }
-
-      return [data, ...prev].slice(0, 50);
-    });
-  });
-
-  // ======================
-  // ROUND START
-  // ======================
-  socket.on("roundStart", (data: RoundStartData) => {
-    setStatus("RUNNING");
-    setIsBettingPhase(false);
-      autoCashoutTriggered.current = false; 
+  socket.on("syncState", (data: SyncStateData) => {
+    if (!data) return;
 
     setRoundId(data.roundId);
-    setCrashPoint(null);
+    setCrashPoint(data.crashPoint);
 
-    isRunningRef.current = true;
-
-    displayedMultiplier.current = 1;
-    targetMultiplier.current = 1;
     setMultiplier(1);
+    targetMultiplier.current = 1;
+    displayedMultiplier.current = 1;
 
-    planeX.current = 0;
-    planeY.current = 0;
-    planeRotate.current = 0;
+    isSyncedRef.current = true;
 
-    cashoutLock.current = false;
+    if (data.status === "RUNNING") {
+      setStatus("RUNNING");
+      setIsBettingPhase(false);
+      isRunningRef.current = true;
+    }
 
-    frameCountRef.current = 0;
+    if (data.status === "CRASHED") {
+      setStatus("CRASHED");
+      setIsBettingPhase(true);
+      isRunningRef.current = false;
+    }
+  });
+ socket.on("onlineUsers", (data: { count: number }) => {
+  setOnlineUsers(data.count);
+});
+  // ======================
+  // ROUND START (FIXED)
+  // ======================
+  socket.on("roundStart", (data: RoundStartData) => {
+  setStatus("RUNNING");
+
+  setBetState((prev) => {
+    if (prev === "LOCKED") {
+      return "ACTIVE";
+    }
+
+    return prev;
   });
 
-  // ======================
-  // MULTIPLIER UPDATE
-  // ======================
-  socket.on("multiplier", (data: MultiplierData) => {
-    targetMultiplier.current = Number(data.multiplier);
-  });
-
-  // ======================
-  // ROUND CRASH
-  // ======================
-socket.on("roundCrash", (data: RoundCrashData) => {
-  setStatus("CRASHED");
-  setIsBettingPhase(true);
+  setIsBettingPhase(false);
 
   autoCashoutTriggered.current = false;
-  isRunningRef.current = false;
 
-  setBetId(null);
-  setSmoke([]);
-
-  const point = Number(data.crashPoint);
-
-  setCrashPoint(point);
-  setMultiplier(point);
-
-  displayedMultiplier.current = point;
-  targetMultiplier.current = point;
-
-  setRoundHistory((prev) => [point, ...prev].slice(0, 20));
-
-  cashoutLock.current = false;
-
-  // ==============================
-  // 🔐 ADD THIS (IMPORTANT PART)
-  // ==============================
-
-});
-
-// 🔥 ADD HERE 👇
-socket.on("roundReveal", (data: RoundRevealData) => {
-  localStorage.setItem("lastRoundId", data.roundId);
-  localStorage.setItem("lastRoundHash", data.hash);
-  localStorage.setItem("lastServerSeed", data.serverSeed);
-  localStorage.setItem("lastNonce", String(data.nonce));
-  localStorage.setItem("lastCrashPoint", String(data.crashPoint));
-});
-  // ======================
-  // ROUND WAITING
-  // ======================
-  socket.on("roundWaiting", (data: RoundWaitingData) => {
-  setStatus("WAITING");
-  setIsBettingPhase(true);
- setSmoke([]); 
- autoCashoutTriggered.current = false;
-
-  const start = data?.countdown ?? 5;
-
-setCountdownStart(start);
-setNextRoundCountdown(start);
-
-  // 🧠 kill previous interval safely
- let t = start;
-
-const interval = setInterval(() => {
-  t -= 1;
-
-  setNextRoundCountdown(t);
-
-  if (t <= 0) {
-    clearInterval(interval);
-  }
-}, 1000);
-
-  isRunningRef.current = false;
-
+  setRoundId(data.roundId);
   setCrashPoint(null);
-  setBetId(null);
 
-  displayedMultiplier.current = 1;
+  isRunningRef.current = true;
+
   targetMultiplier.current = 1;
+  displayedMultiplier.current = 1;
   setMultiplier(1);
 
   planeX.current = 0;
@@ -313,12 +284,87 @@ const interval = setInterval(() => {
   cashoutLock.current = false;
   frameCountRef.current = 0;
 });
+  // ======================
+  // MULTIPLIER
+  // ======================
+  socket.on("multiplier", (data: MultiplierData) => {
+    targetMultiplier.current = Number(data.multiplier);
+  });
 
   // ======================
-  // CLEANUP
+  // ROUND CRASH (FIXED)
   // ======================
+  socket.on("roundCrash", (data: RoundCrashData) => {
+    setStatus("CRASHED");
+    setIsBettingPhase(true);
+
+    isRunningRef.current = false;
+
+    setBetId(null);
+    setSmoke([]);
+
+    const point = Number(data.crashPoint);
+
+    setCrashPoint(point);
+    setMultiplier(point);
+
+    displayedMultiplier.current = point;
+    targetMultiplier.current = point;
+
+    setRoundHistory((prev) => [point, ...prev].slice(0, 20));
+
+    cashoutLock.current = false;
+    setBetState((prev) => {
+  if (prev === "ACTIVE") {
+    return "LOST";
+  }
+
+  return prev;
+});
+
+setTimeout(() => {
+  setBetState("IDLE");
+}, 2500);
+  });
+
+  // ======================
+  // ROUND WAITING
+  // ======================
+ socket.on("roundWaiting", (data: RoundWaitingData) => {
+  setStatus("WAITING");
+  setIsBettingPhase(true);
+
+  setSmoke([]);
+  autoCashoutTriggered.current = false;
+
+  const start = data?.countdown ?? 5;
+
+  countdownMaxRef.current = start;
+  countdownRef.current = start;
+
+  setCountdownStart(start);
+  setNextRoundCountdown(start);
+
+  if ((window as any).__countdownInterval) {
+    clearInterval((window as any).__countdownInterval);
+  }
+
+  (window as any).__countdownInterval = setInterval(() => {
+    countdownRef.current -= 0.05; // 🔥 small step = smooth motion
+
+    if (countdownRef.current <= 0) {
+      countdownRef.current = 0;
+      clearInterval((window as any).__countdownInterval);
+      (window as any).__countdownInterval = null;
+    }
+
+    setNextRoundCountdown(countdownRef.current);
+  }, 50); // 🔥 update 20 times per second
+});
+
   return () => {
     socket.off("onlineUsers");
+    socket.off("syncState");
     socket.off("playersBetting");
     socket.off("betUpdate");
     socket.off("roundStart");
@@ -326,20 +372,18 @@ const interval = setInterval(() => {
     socket.off("roundCrash");
     socket.off("roundWaiting");
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
+
 // ======================
-// ANIMATION LOOP (RN MATCHED VERSION)
+// ANIMATION LOOP (FIXED)
 // ======================
 useEffect(() => {
   const animate = () => {
     frameRef.current = requestAnimationFrame(animate);
 
-    if (!isRunningRef.current || cashoutLock.current) return;
+    // ❌ ONLY THIS GUARD (IMPORTANT FIX)
+    if (!isRunningRef.current) return;
 
-    // ==========================
-    // 1. SMOOTH MULTIPLIER
-    // ==========================
     const SMOOTHNESS = 0.18;
 
     displayedMultiplier.current +=
@@ -348,118 +392,64 @@ useEffect(() => {
 
     const m = displayedMultiplier.current;
 
-    // ==========================
-    // 2. AUTO CASHOUT
-    // ==========================
-    if (
-      autoTab &&
-      betId &&
-      autoCashout !== null &&
-      !autoCashoutTriggered.current &&
-      m >= autoCashout
-    ) {
+    if (autoTab && betId && autoCashout !== null && !autoCashoutTriggered.current && m >= autoCashout) {
       autoCashoutTriggered.current = true;
       cashout();
     }
 
-    // ==========================
-    // 3. UI UPDATE THROTTLE
-    // ==========================
     frameCountRef.current++;
 
     if (frameCountRef.current % 2 === 0) {
-      setMultiplier(m);
+      setMultiplier(Number(m.toFixed(2)));
     }
 
-   // ==========================================================
-// ✈️ PLANE PHYSICS (FINAL FIXED VERSION)
-// ==========================================================
+    // ======================
+    // PLANE
+    // ======================
+    const t = Math.max(0, m - 1);
+    const maxX = gameWidth.current - 80;
 
-const t = Math.max(0, m - 1);
+    const progress = 1 - Math.exp(-t * 0.65);
+    const x = progress * (maxX - 250);
 
-// ==========================
-// SCREEN BOUNDS
-// ==========================
-const maxX = gameWidth.current - 80;
+    const climb = 1 - Math.exp(-t * 0.9);
+    let y = -climb * 45;
 
-// ==========================
-// BASE PROGRESS (smooth, never hard stop)
-// ==========================
-const progress = 1 - Math.exp(-t * 0.65);
+    const swing =
+      Math.sin(t * 1.6) * 15 +
+      Math.sin(t * 0.7) * 7;
 
-// ==========================
-// X MOVEMENT (no wall sticking)
-// ==========================
-const x = progress * (maxX - 250);
+    const breath = 0.85 + Math.sin(t * 0.8) * 0.90;
 
-// soft infinite drift (prevents freeze feeling)
+    y += swing * breath;
 
+    const targetAngle = 45;
 
-// ==========================
-// Y BASE POSITION
-// ==========================
-const climb = 1 - Math.exp(-t * 0.9);
-let y = -climb * 45;
+    planeRotate.current +=
+      (targetAngle - planeRotate.current) * 0.1;
 
-// ==========================
-// CONTINUOUS SWING (NO DAMPING DEATH)
-// ==========================
-const swing =
-  Math.sin(t * 1.6) * 15 +
-  Math.sin(t * 0.7) * 7;
+    const angle = planeRotate.current;
 
-// keeps motion alive at all multipliers
-const breath = 0.85 + Math.sin(t * 0.8) * 0.90;
+    planeX.current = x;
+    planeY.current = y;
+    planeRotate.current = angle;
 
-y += swing * breath;
+    if (frameCountRef.current % 2 === 0) {
+      setPlane({ x, y, rot: angle });
+    }
 
+    smokeTimerRef.current++;
 
-// ==========================
-// ROTATION (keep horizontal fixed)
-// ==========================
-const targetAngle = 45;
-
-planeRotate.current +=
-  (targetAngle - planeRotate.current) * 0.1;
-
-const angle = planeRotate.current;
-
-// ==========================
-// STORE VALUES
-// ==========================
-planeX.current = x;
-planeY.current = y;
-planeRotate.current = angle;
-
-// ==========================
-// UPDATE UI
-// ==========================
-if (frameCountRef.current % 2 === 0) {
-  setPlane({
-    x,
-    y,
-    rot: angle,
-  });
-}
-// ==========================
-// SMOKE TRAIL (FIXED - SINGLE SYSTEM)
-// ==========================
-smokeTimerRef.current++;
-
-if (smokeTimerRef.current % 5 === 0) {
-  setSmoke((prev) => {
-    const next = [
-      ...prev,
-      {
-        x: planeX.current,
-        y: planeY.current,
-        id: crypto.randomUUID(),
-      },
-    ];
-
-    return next.slice(-25); // keep last 25 only
-  });
-}
+    if (smokeTimerRef.current % 5 === 0) {
+      setSmoke((prev) => [
+        ...prev,
+        {
+          x: planeX.current,
+          y: planeY.current,
+          id: crypto.randomUUID(),
+        },
+      ].slice(-25));
+    }
   };
 
   frameRef.current = requestAnimationFrame(animate);
@@ -467,13 +457,31 @@ if (smokeTimerRef.current % 5 === 0) {
   return () => {
     if (frameRef.current) cancelAnimationFrame(frameRef.current);
   };
-}, [autoTab, betId, autoCashout, cashout]);
+}, []);
 
 useEffect(() => {
-  if (!gameAreaRef.current) return;
+  const update = () => {
+    if (!gameAreaRef.current) return;
+    gameWidth.current = gameAreaRef.current.offsetWidth;
+  };
 
-  const rect = gameAreaRef.current.getBoundingClientRect();
-  gameWidth.current = rect.width;
+  update();
+  window.addEventListener("resize", update);
+
+  return () => window.removeEventListener("resize", update);
+}, []);
+useEffect(() => {
+
+  const handler = (data: any) => {
+    console.log("BET CONFIRMED:", data);
+  };
+
+  socket.on("betPlaced", handler);
+
+  return () => {
+    socket.off("betPlaced", handler);
+  };
+
 }, []);
   // ======================
   // PLACE BET
@@ -481,36 +489,16 @@ useEffect(() => {
 const placeBet = async () => {
   if (!user?._id || !roundId) return;
   if (!isBettingPhase) return;
+  if (!betSlips.length) return;
 
-  const amountNum = Number(betAmount);
+  socket.emit("placeBet", {
+    userId: user._id,
+    betSlips,
+    autoCashout: autoCashoutEnabled ? autoCashout : null,
+  });
 
-  // ❌ FIX: prevent invalid / empty / NaN bets
-  if (!amountNum || amountNum <= 0) return;
-
-  const res = await fetch(
-    "https://youcashm-backend.onrender.com/api/bet",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: user._id,
-        amount: amountNum, // ✅ FIXED HERE
-        roundId,
-        autoCashout: autoCashoutEnabled ? autoCashout : null,
-      }),
-    }
-  );
-
-  const data = await res.json();
-
-  if (!data.success) {
-    alert(data.message || "Bet failed");
-    return;
-  }
-
-  setBetId(data.bet.id);
+  // UI immediately locks (optimistic UI)
+  setBetState("LOCKED");
 };
 
   // ======================
@@ -658,11 +646,12 @@ const placeBet = async () => {
   <div
     style={{
       height: "100%",
-      width: `${(nextRoundCountdown / countdownStart) * 100}%`,
+     width: `${(nextRoundCountdown / countdownMaxRef.current) * 100}%`,
       background: "#00ff88",
       transition: "width 0.3s linear",
     }}
   />
+
 </div>
       <div
         style={{
@@ -672,7 +661,7 @@ const placeBet = async () => {
           fontSize: 16,
         }}
       >
-        NEXT ROUND IN {nextRoundCountdown}s
+        NEXT ROUND IN {(nextRoundCountdown ?? 0).toFixed(nextRoundCountdown < 1 ? 2 : 1)}s
       </div>
 
     </div>
@@ -782,10 +771,15 @@ textShadow: "0 0 12px rgba(0,255,136,0.8), 0 0 25px rgba(0,255,136,0.4)",
 </div>
 
       <BettingPanel
-        betAmount={betAmount}
-        setBetAmount={setBetAmount}
+        betSlips={betSlips}
+addBetSlip={addBetSlip}
+removeBetSlip={removeBetSlip}
+updateBetSlip={updateBetSlip}
         placeBet={placeBet}
         cashout={cashout}
+        betState={betState}
+multiplier={multiplier}
+lockedBetAmount={lockedBetAmount}
         autoTab={autoTab}
         setAutoTab={setAutoTab}
         autoBetEnabled={autoBetEnabled}

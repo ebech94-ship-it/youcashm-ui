@@ -25,12 +25,18 @@ export default function AuthScreen() {
     }
   };
 
-  const handleAuth = async () => {
-    const url =
-      tab === "signup"
-        ? "https://youcashm-backend.onrender.com/auth/signup"
-        : "https://youcashm-backend.onrender.com/auth/login";
+ 
+// ✅ LOCAL DEVELOPMENT
+const BACKEND_URL = "http://localhost:5000";
+// 🚀 PRODUCTION
+// const BACKEND_URL =
+//   "https://youcashm-backend.onrender.com";
 
+const handleAuth = async () => {
+  const url =
+    tab === "signup"
+      ? `${BACKEND_URL}/auth/signup`
+      : `${BACKEND_URL}/auth/login`;
     try {
       const res = await fetch(url, {
         method: "POST",

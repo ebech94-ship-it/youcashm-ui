@@ -3,10 +3,12 @@
 import React from "react";
 
 interface Props {
-  betAmount: string;
-  setBetAmount: (value: string) => void;
+  
   placeBet: () => void;
   cashout: () => void;
+  betState: string;
+multiplier: number;
+lockedBetAmount: number;
 
   autoTab: boolean;
   setAutoTab: (v: boolean) => void;
@@ -21,13 +23,22 @@ interface Props {
   setAutoCashout: (v: number | null) => void;
 
   playersBetting: number;
+  betSlips: { id: number; amount: string }[];
+addBetSlip: () => void;
+removeBetSlip: (id: number) => void;
+updateBetSlip: (id: number, value: string) => void;
 }
 
 export default function BetPanel({
-  betAmount,
-  setBetAmount,
+  betSlips,
+addBetSlip,
+removeBetSlip,
+updateBetSlip,
   placeBet,
   cashout,
+  betState,
+multiplier,
+lockedBetAmount,
   autoTab,
   setAutoTab,
   autoBetEnabled,
@@ -110,87 +121,108 @@ const [loadingCashout, setLoadingCashout] = React.useState(false);
           </div>
 
           {/* INPUT */}
-          <input
-            value={autoCashout ?? ""}
-            onChange={(e) =>
-              setAutoCashout(
-                e.target.value ? parseFloat(e.target.value) : null
-              )
-            }
-            placeholder="1.50x"
-            style={styles.autoInput as React.CSSProperties}
-          />
+         <input
+  type="number"
+  step="0.01"
+  min="1.01"
+  inputMode="decimal"
+  value={autoCashout ?? ""}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    if (value === "") {
+      setAutoCashout(null);
+      return;
+    }
+
+    setAutoCashout(value === "." ? 0 : Number(value));
+  }}
+  placeholder="1.50x"
+  style={styles.autoInput as React.CSSProperties}
+/>
         </div>
       )}
 
       {/* BET INPUT */}
-      <div style={styles.inputRow as React.CSSProperties}>
-        <button
-         onClick={() => {
-  const safe = Number(betAmount) || 0;
-  setBetAmount(Math.max(0, safe - 100).toString());
-}}
-        >
-          -
-        </button>
+     {/* BET SLIPS SYSTEM */}
+<div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
 
-        <input
-          value={betAmount}
-          onChange={(e) => setBetAmount(e.target.value)}
-          style={styles.input}
-        />
+  {/* EACH BET SLOT */}
+  {betSlips.map((bet) => (
+    <div
+      key={bet.id}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        background: "#1a1c24",
+        padding: 10,
+        borderRadius: 12,
+      }}
+    >
 
-        <button
-         onClick={() => {
-  const safe = Number(betAmount) || 0;
-  setBetAmount((safe + 100).toString());
-}}
-        >
-          +
-        </button>
-      </div>
+      {/* - button */}
+      <button
+        disabled={betState !== "IDLE"}
+        onClick={() => {
+          const safe = Number(bet.amount) || 0;
+          updateBetSlip(bet.id, String(Math.max(0, safe - 100)));
+        }}
+      >
+        -
+      </button>
 
-      {/* QUICK AMOUNTS */}
-      <div style={styles.quickRow as React.CSSProperties}>
-        {quickAmounts.map((amt) => (
-          <button
-            key={amt}
-            onClick={() => setBetAmount(String(amt))}
-            style={styles.quickButton}
-          >
-            {amt}
-          </button>
-        ))}
-      </div>
+      {/* input */}
+      <input
+        value={bet.amount}
+        disabled={betState !== "IDLE"}
+        onChange={(e) => updateBetSlip(bet.id, e.target.value)}
+        style={{
+          flex: 1,
+          textAlign: "center",
+          padding: 8,
+        }}
+      />
 
-      {/* ACTIONS */}
-      <div style={styles.actionRow as React.CSSProperties}>
-        <button
-  onClick={async () => {
-    if (loadingBet) return;
-    setLoadingBet(true);
-    await placeBet();
-    setLoadingBet(false);
-  }}
-  disabled={loadingBet}
-  style={styles.betBtn}
->
-  {loadingBet ? "BETTING..." : "BET"}
-</button>
+      {/* + button */}
+      <button
+        disabled={betState !== "IDLE"}
+        onClick={() => {
+          const safe = Number(bet.amount) || 0;
+          updateBetSlip(bet.id, String(safe + 100));
+        }}
+      >
+        +
+      </button>
 
-       <button
-  onClick={async () => {
-    if (loadingCashout) return;
-    setLoadingCashout(true);
-    await cashout();
-    setLoadingCashout(false);
-  }}
-  disabled={loadingCashout}
-  style={styles.cashBtn}
->
-  {loadingCashout ? "..." : "CASHOUT"}
-</button>
-      </div>
+      {/* remove */}
+      <button
+        disabled={betState !== "IDLE"}
+        onClick={() => removeBetSlip(bet.id)}
+        style={{ color: "red" }}
+      >
+        x
+      </button>
+
+    </div>
+  ))}
+
+  {/* ADD BET BUTTON */}
+  <button
+    disabled={betState !== "IDLE"}
+    onClick={addBetSlip}
+    style={{
+      padding: 12,
+      borderRadius: 10,
+      background: "#2a2d38",
+      color: "#fff",
+      border: "none",
+    }}
+  >
+    + Add Bet
+  </button>
+
+</div>
 
       <p style={{ color: "#888", marginTop: 10 }}>
         {playersBetting} players betting
